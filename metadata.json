@@ -1,0 +1,6 @@
+{
+  "name": "JEE Main & Advanced Mastery Tracker",
+  "description": "Comprehensive JEE Main & Advanced preparation engine with embedded YouTube theory tracker, 54-chapter master syllabus, PYQ & guess analysis, mock tests, and error log.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
