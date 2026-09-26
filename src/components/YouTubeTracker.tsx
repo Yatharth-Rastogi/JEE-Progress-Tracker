@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, Pause, RotateCcw, Bookmark, Clock, CheckCircle2, 
   ExternalLink, Sparkles, BookOpen, Volume2, FastForward,
-  Info, AlertCircle, Save, Sliders, ChevronRight
+  Info, AlertCircle, Save, Sliders, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { Chapter, VideoBookmark, Subject } from '../types/jee';
 import { extractYouTubeVideoId, formatSeconds } from '../utils/calculations';
@@ -319,36 +319,107 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
 
   const curatedVideo = getCuratedVideo(currentChapter.id);
 
+  const handlePrevChapter = () => {
+    const list = filteredChapters.length > 0 ? filteredChapters : chapters;
+    const currentIndex = list.findIndex((c) => c.id === currentChapter.id);
+    if (currentIndex > 0) {
+      onSelectChapter(list[currentIndex - 1].id);
+    } else {
+      onSelectChapter(list[list.length - 1].id);
+    }
+  };
+
+  const handleNextChapter = () => {
+    const list = filteredChapters.length > 0 ? filteredChapters : chapters;
+    const currentIndex = list.findIndex((c) => c.id === currentChapter.id);
+    if (currentIndex >= 0 && currentIndex < list.length - 1) {
+      onSelectChapter(list[currentIndex + 1].id);
+    } else {
+      onSelectChapter(list[0].id);
+    }
+  };
+
+  // Helper to cleanly separate main title and parenthetical subtopic metadata
+  const splitChapterTitle = (fullName: string) => {
+    const match = fullName.match(/^(.*?)\s*\((.*?)\)$/);
+    if (match) {
+      return {
+        mainTitle: match[1].trim(),
+        subtitle: match[2].trim(),
+      };
+    }
+    return {
+      mainTitle: fullName,
+      subtitle: null,
+    };
+  };
+
+  const { mainTitle, subtitle } = splitChapterTitle(currentChapter.name);
+
   return (
     <div className="space-y-6">
       {/* Header Bar with Chapter Selector */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-md">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4" />
-              <span>Theory Mastery Engine</span>
-            </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-              <span>{currentChapter.name}</span>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${
-                currentChapter.subject === 'Physics' ? 'bg-indigo-950/80 text-indigo-300 border-indigo-700/50' :
-                currentChapter.subject === 'Chemistry' ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/50' :
-                'bg-cyan-950/80 text-cyan-300 border-cyan-700/50'
+      <div className="bg-slate-900/95 border border-slate-800 rounded-2xl p-5 shadow-2xl backdrop-blur-md">
+        <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-5">
+          {/* Chapter Title & Hierarchical Badges */}
+          <div className="space-y-2 flex-1 min-w-0">
+            {/* Top Structured Badge Row */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 text-cyan-400 text-[11px] font-bold uppercase tracking-wider bg-cyan-950/70 border border-cyan-800/60 px-2.5 py-0.5 rounded-lg">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Theory Mastery</span>
+              </div>
+
+              <span className={`text-[11px] px-2.5 py-0.5 rounded-lg font-bold border ${
+                currentChapter.subject === 'Physics' ? 'bg-indigo-950/90 text-indigo-300 border-indigo-700/60' :
+                currentChapter.subject === 'Chemistry' ? 'bg-emerald-950/90 text-emerald-300 border-emerald-700/60' :
+                'bg-cyan-950/90 text-cyan-300 border-cyan-700/60'
               }`}>
-                {currentChapter.subject} • {currentChapter.unit}
+                {currentChapter.subject}
               </span>
-            </h1>
+
+              <span className="text-[11px] px-2.5 py-0.5 rounded-lg font-medium bg-slate-800/80 text-slate-300 border border-slate-700">
+                {currentChapter.unit}
+              </span>
+
+              <span className={`text-[11px] px-2.5 py-0.5 rounded-lg font-bold border ${
+                currentChapter.priority === 'Critical' ? 'bg-rose-950/90 text-rose-300 border-rose-700/60' :
+                currentChapter.priority === 'High' ? 'bg-amber-950/90 text-amber-300 border-amber-700/60' :
+                'bg-slate-800 text-slate-400 border-slate-700'
+              }`}>
+                {currentChapter.priority} Priority
+              </span>
+
+              <span className="text-[11px] px-2.5 py-0.5 rounded-lg font-mono text-cyan-300 bg-slate-950/90 border border-slate-800">
+                Ch #{currentChapter.id.split('-')[1]}
+              </span>
+            </div>
+
+            {/* Main Headline & Subtitle */}
+            <div className="pt-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug break-words">
+                {mainTitle}
+              </h1>
+              {subtitle && (
+                <div className="mt-1.5 flex items-start gap-1.5 text-xs text-slate-300">
+                  <span className="text-cyan-400 font-semibold shrink-0">Key Topics:</span>
+                  <span className="text-slate-300 bg-slate-950/80 border border-slate-800 px-2 py-0.5 rounded-md font-mono text-[11px] leading-relaxed">
+                    {subtitle}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Subject Filter + Chapter Dropdown */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex rounded-lg bg-slate-950/70 p-1 border border-slate-800">
+          {/* Subject Filter + Quick Jump Navigation */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 xl:self-start shrink-0 pt-1">
+            {/* Subject Filter Pills */}
+            <div className="flex rounded-xl bg-slate-950/90 p-1 border border-slate-800 self-start sm:self-auto">
               {(['All', 'Physics', 'Chemistry', 'Mathematics'] as const).map((sub) => (
                 <button
                   key={sub}
                   onClick={() => setSelectedSubjectFilter(sub)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                     selectedSubjectFilter === sub
                       ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
                       : 'text-slate-400 hover:text-white'
@@ -359,48 +430,85 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
               ))}
             </div>
 
-            <select
-              value={currentChapter.id}
-              onChange={(e) => onSelectChapter(e.target.value)}
-              className="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 max-w-xs truncate"
-            >
-              {filteredChapters.map((c) => (
-                <option key={c.id} value={c.id}>
-                  [{c.subject.slice(0, 1)}] {c.name} ({c.theoryPercent}%)
-                </option>
-              ))}
-            </select>
+            {/* Prev / Dropdown / Next Controls */}
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handlePrevChapter}
+                title="Previous Chapter"
+                className="p-2 rounded-xl bg-slate-950/90 border border-slate-700/80 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/50 transition-colors shadow-sm"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="relative flex-1 sm:flex-initial">
+                <select
+                  value={currentChapter.id}
+                  onChange={(e) => onSelectChapter(e.target.value)}
+                  className="w-full sm:w-72 lg:w-80 bg-slate-950/90 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 truncate cursor-pointer shadow-sm"
+                >
+                  {filteredChapters.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      [{c.subject.slice(0, 1)}] {c.name} ({c.theoryPercent}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={handleNextChapter}
+                title="Next Chapter"
+                className="p-2 rounded-xl bg-slate-950/90 border border-slate-700/80 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/50 transition-colors shadow-sm"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Video URL Input & Controls */}
-        <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row gap-2">
+        {/* Video URL Input & Preset Controls */}
+        <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-col md:flex-row gap-2.5 items-stretch">
           <div className="relative flex-1">
             <input
               type="text"
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
               placeholder="Paste YouTube Lecture / One-Shot URL (e.g. https://www.youtube.com/watch?v=...)"
-              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg pl-3 pr-24 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl pl-3 pr-24 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
             />
             {inputUrl && (
               <a
                 href={inputUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="absolute right-2 top-2 text-slate-400 hover:text-cyan-400 text-xs flex items-center gap-1 bg-slate-800/80 px-2 py-1 rounded"
+                className="absolute right-2 top-1.5 text-slate-400 hover:text-cyan-400 text-xs flex items-center gap-1 bg-slate-800/90 hover:bg-slate-700 px-2 py-1 rounded-lg border border-slate-700 transition-colors"
               >
                 Open <ExternalLink className="w-3 h-3" />
               </a>
             )}
           </div>
-          <button
-            onClick={handleSaveUrl}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-lg transition-colors border border-slate-700 flex items-center justify-center gap-1.5"
-          >
-            <Save className="w-3.5 h-3.5 text-cyan-400" />
-            Set Video
-          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSaveUrl}
+              className="flex-1 sm:flex-initial px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition-colors border border-slate-700 flex items-center justify-center gap-1.5 shadow-sm"
+            >
+              <Save className="w-3.5 h-3.5 text-cyan-400" />
+              Set Video
+            </button>
+
+            <button
+              onClick={() => {
+                setInputUrl(curatedVideo.url);
+                setPlayerError(null);
+                onUpdateChapter(currentChapter.id, { videoUrl: curatedVideo.url });
+              }}
+              title="Load curated high-yield PW Manzil / community lecture"
+              className="px-3.5 py-2 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-700/60 text-cyan-300 hover:text-cyan-200 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline">Load</span> Verified Preset
+            </button>
+          </div>
         </div>
       </div>
 

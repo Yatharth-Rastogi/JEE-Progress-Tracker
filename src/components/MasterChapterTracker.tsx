@@ -343,14 +343,14 @@ export const MasterChapterTracker: React.FC<MasterChapterTrackerProps> = ({
                       </td>
 
                       {/* Chapter Name & Prerequisites */}
-                      <td className="py-3 px-3">
-                        <div className="font-semibold text-white group-hover:text-cyan-300 transition-colors">
+                      <td className="py-3 px-3 min-w-[220px] max-w-md">
+                        <div className="font-bold text-white group-hover:text-cyan-300 transition-colors leading-snug break-words">
                           {chapter.name}
                         </div>
                         {chapter.prerequisites && chapter.prerequisites.length > 0 && (
-                          <div className="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
-                            <span className="text-slate-400">Prereq:</span>
-                            <span className="truncate max-w-[200px] text-slate-400">
+                          <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                            <span className="text-slate-400 font-medium">Prereq:</span>
+                            <span className="truncate max-w-[240px] text-slate-400 font-mono">
                               {chapter.prerequisites.join(', ')}
                             </span>
                           </div>
