@@ -844,8 +844,51 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
                 </button>
               ))}
 
-              {/* PW Manzil 2026 Full Playlist Link */}
-              {curatedVideo.playlistUrl && (
+              {/* Official Manzil Playlist Links */}
+              {currentChapter.subject === 'Physics' ? (
+                <div className="space-y-1.5 pt-1">
+                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <span>Official PW Manzil Physics Playlists:</span>
+                  </div>
+                  <a
+                    href="https://www.youtube.com/playlist?list=PLxyGaR3hEy3ieFuXAdtlenRNcey9Cxo6I"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full p-2 rounded-xl bg-cyan-950/40 border border-cyan-700/50 hover:bg-cyan-900/40 text-xs text-cyan-300 hover:text-cyan-200 transition-colors flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                      <span className="font-semibold">Manzil 2026 Physics (Saleem & RJ Sir)</span>
+                    </div>
+                    <span className="text-[10px] text-cyan-400 font-mono">Open ↗</span>
+                  </a>
+                  <a
+                    href="https://www.youtube.com/playlist?list=PLxyGaR3hEy3gYPGsrnKx-XAi3yV6rocEx"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full p-2 rounded-xl bg-indigo-950/40 border border-indigo-700/50 hover:bg-indigo-900/40 text-xs text-indigo-300 hover:text-indigo-200 transition-colors flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-indigo-400" />
+                      <span className="font-semibold">Manzil 2025 Physics (Saleem & RJ Sir)</span>
+                    </div>
+                    <span className="text-[10px] text-indigo-400 font-mono">Open ↗</span>
+                  </a>
+                  <a
+                    href="https://www.youtube.com/playlist?list=PLxyGaR3hEy3gvV4VbbP8pza7MtoJkGu6M"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full p-2 rounded-xl bg-slate-950/80 border border-slate-700 hover:border-slate-600 text-xs text-slate-300 hover:text-white transition-colors flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-400" />
+                      <span className="font-semibold">Manzil Comeback Physics (Detailed)</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">Open ↗</span>
+                  </a>
+                </div>
+              ) : curatedVideo.playlistUrl ? (
                 <a
                   href={curatedVideo.playlistUrl}
                   target="_blank"
@@ -858,7 +901,7 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
                   </div>
                   <span className="text-[10px] text-indigo-400 font-mono">Open Playlist ↗</span>
                 </a>
-              )}
+              ) : null}
 
               <a
                 href={`https://www.youtube.com/results?search_query=${encodeURIComponent(curatedVideo.searchQuery)}`}
