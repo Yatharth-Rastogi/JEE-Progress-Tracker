@@ -165,11 +165,18 @@ export default function App() {
     try {
       setIsSyncing(true);
       const loggedInUser = await signInWithGoogle();
-      setUser(loggedInUser);
-      await restoreUserDataFromCloud(loggedInUser);
+      if (loggedInUser) {
+        setUser(loggedInUser);
+        await restoreUserDataFromCloud(loggedInUser);
+      }
     } catch (err: any) {
-      setSyncError(err?.message || 'Sign in failed');
-      throw err;
+      if (
+        err?.code !== 'auth/popup-closed-by-user' &&
+        err?.code !== 'auth/cancelled-popup-request'
+      ) {
+        setSyncError(err?.message || 'Sign in failed');
+        throw err;
+      }
     } finally {
       setIsSyncing(false);
     }

@@ -204,13 +204,17 @@ export const SettingsAndBackup: React.FC<SettingsAndBackupProps> = ({
             {!user ? (
               <button
                 onClick={async () => {
-                  if (onSignInWithGoogle) {
+                  if (onSignInWithGoogle && !isCloudActionLoading) {
                     try {
                       setIsCloudActionLoading(true);
                       await onSignInWithGoogle();
-                      showNotification('success', 'Signed in with Google! Cloud sync is now active.');
                     } catch (e: any) {
-                      showNotification('error', e?.message || 'Failed to sign in with Google');
+                      if (
+                        e?.code !== 'auth/popup-closed-by-user' &&
+                        e?.code !== 'auth/cancelled-popup-request'
+                      ) {
+                        showNotification('error', e?.message || 'Failed to sign in with Google');
+                      }
                     } finally {
                       setIsCloudActionLoading(false);
                     }

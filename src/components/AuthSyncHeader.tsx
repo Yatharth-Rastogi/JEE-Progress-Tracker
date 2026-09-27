@@ -23,11 +23,17 @@ export const AuthSyncHeader: React.FC<AuthSyncHeaderProps> = ({
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   const handleSignInClick = async () => {
+    if (isSigningIn) return;
     try {
       setIsSigningIn(true);
       await onSignIn();
     } catch (e: any) {
-      console.error('Sign-in error:', e);
+      if (
+        e?.code !== 'auth/popup-closed-by-user' &&
+        e?.code !== 'auth/cancelled-popup-request'
+      ) {
+        console.error('Sign-in error:', e);
+      }
     } finally {
       setIsSigningIn(false);
     }

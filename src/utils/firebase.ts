@@ -82,7 +82,7 @@ export async function validateFirestoreConnection(): Promise<boolean> {
 /**
  * Sign in using Google OAuth popup
  */
-export async function signInWithGoogle(): Promise<User> {
+export async function signInWithGoogle(): Promise<User | null> {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
@@ -108,6 +108,14 @@ export async function signInWithGoogle(): Promise<User> {
 
     return user;
   } catch (err: any) {
+    // Gracefully handle user-initiated cancellations without error logging
+    if (
+      err?.code === 'auth/popup-closed-by-user' ||
+      err?.code === 'auth/cancelled-popup-request' ||
+      err?.code === 'auth/user-cancelled'
+    ) {
+      return null;
+    }
     console.error('Google Sign-In failed:', err);
     throw err;
   }
