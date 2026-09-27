@@ -32,24 +32,8 @@ googleProvider.setCustomParameters({
   prompt: 'select_account',
 });
 
-// Initialize Firestore with configured databaseId, persistent local cache, and long-polling for stable web connectivity
-let firestoreInstance;
-try {
-  firestoreInstance = initializeFirestore(
-    app,
-    {
-      localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager(),
-      }),
-      experimentalForceLongPolling: true,
-    },
-    firebaseConfig.firestoreDatabaseId || '(default)'
-  );
-} catch (_) {
-  firestoreInstance = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
-}
-
-export const db = firestoreInstance;
+// Initialize Firestore with configured databaseId as per Firebase Integration Skill
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 
 // Reconnect automatically when the browser comes online
 if (typeof window !== 'undefined') {
@@ -67,14 +51,8 @@ export async function validateFirestoreConnection(): Promise<boolean> {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
     return true;
-  } catch (error: any) {
-    if (
-      error?.message?.includes('the client is offline') ||
-      error?.code === 'unavailable' ||
-      error?.message?.includes('offline')
-    ) {
-      console.info('Firestore is operating in offline mode. Local caching enabled.');
-    }
+  } catch (_error: any) {
+    // Normal during initial boot before user authentication; Firestore automatically manages offline queue
     return true;
   }
 }

@@ -134,9 +134,29 @@ export const SettingsAndBackup: React.FC<SettingsAndBackupProps> = ({
         )}
 
         {errorMsg && (
-          <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{errorMsg}</span>
+          <div className="mt-3 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs space-y-2">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+              <div className="space-y-1">
+                <span className="font-semibold text-rose-200">
+                  {errorMsg.includes('unauthorized-domain') 
+                    ? 'Domain Not Authorized in Firebase' 
+                    : errorMsg}
+                </span>
+                {errorMsg.includes('unauthorized-domain') && (
+                  <div className="text-[11px] text-slate-300 leading-relaxed space-y-1.5 pt-1">
+                    <p>
+                      Your app is hosted on a custom domain or GitHub Pages (<code className="px-1.5 py-0.5 rounded bg-black/40 text-amber-300 font-mono text-[10px]">{typeof window !== 'undefined' ? window.location.hostname : 'custom-domain'}</code>) which needs to be added to Firebase Authorized Domains.
+                    </p>
+                    <div className="p-2.5 rounded-lg bg-black/50 border border-white/[0.08] text-slate-300 font-mono text-[10px] space-y-1">
+                      <div>1. Open <a href="https://console.firebase.google.com/project/gen-lang-client-0161368789/authentication/settings" target="_blank" rel="noreferrer" className="text-cyan-400 underline font-semibold">Firebase Console &gt; Authentication &gt; Settings</a></div>
+                      <div>2. Click on the <strong>Authorized domains</strong> tab</div>
+                      <div>3. Click <strong>Add domain</strong> &amp; enter: <span className="text-amber-300 font-bold">{typeof window !== 'undefined' ? window.location.hostname : 'yatharth-rastogi.github.io'}</span></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
