@@ -393,7 +393,7 @@ export default function App() {
           </div>
 
           {/* Quick Stats, Cloud Sync & Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Syllabus Mastery Pill - hidden on small mobile */}
             <div className="hidden sm:flex items-center gap-2 bg-slate-900/80 border border-white/[0.08] px-2.5 py-1.5 rounded-xl text-xs font-mono">
               <span className="text-slate-400 text-[11px]">Mastery:</span>
@@ -406,6 +406,16 @@ export default function App() {
               </div>
             </div>
 
+            {/* Quick Log PYQ Button */}
+            <button
+              onClick={() => handleOpenQuickLogModal()}
+              className="px-2.5 sm:px-3.5 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl shadow-sm hover:shadow-cyan-500/25 transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
+            >
+              <PlusCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span className="hidden xs:inline sm:inline">Log PYQ</span>
+              <span className="xs:hidden sm:hidden">Log</span>
+            </button>
+
             {/* Google Account & Cloud Backup Component */}
             <AuthSyncHeader
               user={user}
@@ -415,15 +425,6 @@ export default function App() {
               onSignIn={handleSignIn}
               onSignOut={handleSignOut}
             />
-
-            <button
-              onClick={() => handleOpenQuickLogModal()}
-              className="px-2.5 sm:px-3.5 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl shadow-sm hover:shadow-cyan-500/25 transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
-            >
-              <PlusCircle className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span className="hidden xs:inline sm:inline">Log PYQ</span>
-              <span className="xs:hidden sm:hidden">Log</span>
-            </button>
           </div>
         </div>
 

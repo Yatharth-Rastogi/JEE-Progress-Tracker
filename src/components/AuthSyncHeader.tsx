@@ -33,22 +33,12 @@ export const AuthSyncHeader: React.FC<AuthSyncHeaderProps> = ({
     }
   };
 
-  const formatLastSync = (isoString: string | null) => {
-    if (!isoString) return 'Pending sync';
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch {
-      return 'Synced';
-    }
-  };
-
   if (!user) {
     return (
       <button
         onClick={handleSignInClick}
         disabled={isSigningIn}
-        title="Sign in with Google to automatically backup & sync your JEE progress in Cloud"
+        title="Sign up / Sign in with Google to automatically save and sync your JEE progress in Cloud"
         className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 bg-white/[0.04] hover:bg-white/[0.08] active:scale-95 text-slate-200 hover:text-white border border-white/[0.08] hover:border-cyan-500/50 rounded-xl text-xs font-medium transition-all shadow-sm shrink-0"
       >
         {/* Google 4-Color 'G' SVG */}
@@ -71,10 +61,10 @@ export const AuthSyncHeader: React.FC<AuthSyncHeaderProps> = ({
           />
         </svg>
         <span className="hidden sm:inline">
-          {isSigningIn ? 'Connecting...' : 'Backup with Google'}
+          {isSigningIn ? 'Connecting...' : 'Sign up / Sign in'}
         </span>
         <span className="sm:hidden text-[11px]">
-          {isSigningIn ? '...' : 'Sign In'}
+          {isSigningIn ? '...' : 'Log in'}
         </span>
       </button>
     );
@@ -108,19 +98,16 @@ export const AuthSyncHeader: React.FC<AuthSyncHeaderProps> = ({
         {/* Sync Status Badge */}
         <div className="flex items-center gap-1 text-[11px] font-mono">
           {isSyncing ? (
-            <span className="text-cyan-400 flex items-center gap-1 font-medium">
+            <span className="text-cyan-400 flex items-center gap-1 font-medium" title="Saving changes to cloud in background...">
               <RefreshCw className="w-3 h-3 animate-spin shrink-0" />
-              <span className="hidden sm:inline">Syncing...</span>
             </span>
           ) : syncError ? (
             <span className="text-amber-400 flex items-center gap-1" title={syncError}>
               <AlertCircle className="w-3 h-3 text-amber-400 shrink-0" />
-              <span className="hidden sm:inline">Offline</span>
             </span>
           ) : (
-            <span className="text-emerald-400 flex items-center gap-1">
+            <span className="text-emerald-400 flex items-center gap-1" title="Automatic Cloud Sync Active">
               <CheckCircle2 className="w-3 h-3 shrink-0" />
-              <span className="hidden sm:inline">{formatLastSync(lastSyncedAt)}</span>
             </span>
           )}
         </div>

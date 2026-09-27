@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, Pause, RotateCcw, Bookmark, Clock, CheckCircle2, 
   ExternalLink, Sparkles, BookOpen, Volume2, FastForward,
-  Info, AlertCircle, Save, Sliders, ChevronRight, ChevronLeft
+  Info, AlertCircle, Save, Sliders, ChevronRight, ChevronLeft,
+  Gauge, Zap, X, HelpCircle
 } from 'lucide-react';
 import { Chapter, VideoBookmark, Subject } from '../types/jee';
 import { extractYouTubeVideoId, formatSeconds } from '../utils/calculations';
@@ -41,6 +42,8 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
   const [apiReady, setApiReady] = useState(false);
   const [playerError, setPlayerError] = useState<string | null>(null);
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState<Subject | 'All'>('All');
+  const [currentSpeed, setCurrentSpeed] = useState<number>(1);
+  const [showSpeedModal, setShowSpeedModal] = useState<boolean>(false);
 
   const playerRef = useRef<any>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -270,6 +273,31 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
       playerRef.current.seekTo(seconds, true);
       setCurrentTime(seconds);
     }
+  };
+
+  const handleSetSpeed = (speed: number) => {
+    setCurrentSpeed(speed);
+    if (playerRef.current && typeof playerRef.current.setPlaybackRate === 'function') {
+      try {
+        playerRef.current.setPlaybackRate(speed);
+      } catch (err) {
+        console.error('Failed to set playback rate:', err);
+      }
+    }
+    // Also postMessage directly to iframe for maximum compatibility
+    try {
+      const iframe = playerContainerRef.current?.querySelector('iframe');
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'setPlaybackRate',
+            args: [speed],
+          }),
+          '*'
+        );
+      }
+    } catch (_) {}
   };
 
   const handleManualPercentChange = (val: number) => {
@@ -568,38 +596,90 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
             )}
 
             {/* Playback Progress Indicator & Fast Action Controls */}
-            <div className="mt-4 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono text-cyan-300">
-                  <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>{formatSeconds(currentTime)}</span>
-                  <span className="text-slate-500">/</span>
-                  <span className="text-slate-400">{formatSeconds(duration)}</span>
+            <div className="mt-4 pt-3 border-t border-white/[0.08] space-y-3">
+              {/* Row 1: Time, Resume button, Theory Status */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs font-mono text-cyan-300">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>{formatSeconds(currentTime)}</span>
+                    <span className="text-slate-600">/</span>
+                    <span className="text-slate-400">{formatSeconds(duration)}</span>
+                  </div>
+
+                  {currentChapter.videoCurrentTime && currentChapter.videoCurrentTime > 0 && (
+                    <button
+                      onClick={() => handleSeek(currentChapter.videoCurrentTime || 0)}
+                      className="px-2.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Resume ({formatSeconds(currentChapter.videoCurrentTime)})</span>
+                    </button>
+                  )}
                 </div>
 
-                {currentChapter.videoCurrentTime && currentChapter.videoCurrentTime > 0 && (
-                  <button
-                    onClick={() => handleSeek(currentChapter.videoCurrentTime || 0)}
-                    className="px-3 py-1.5 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-700/50 text-cyan-300 text-xs rounded-lg flex items-center gap-1.5 transition-colors"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    Resume from {formatSeconds(currentChapter.videoCurrentTime)}
-                  </button>
-                )}
+                {/* Status Badge */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">Theory Status:</span>
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
+                    currentChapter.theoryStatus === 'Completed'
+                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                      : currentChapter.theoryStatus === 'In Progress'
+                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                      : 'bg-slate-800/80 text-slate-400 border-slate-700'
+                  }`}>
+                    {currentChapter.theoryStatus} ({currentChapter.theoryPercent}%)
+                  </span>
+                </div>
               </div>
 
-              {/* Status Badge */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">Theory Status:</span>
-                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
-                  currentChapter.theoryStatus === 'Completed'
-                    ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
-                    : currentChapter.theoryStatus === 'In Progress'
-                    ? 'bg-amber-950 text-amber-300 border-amber-700'
-                    : 'bg-slate-800 text-slate-400 border-slate-700'
-                }`}>
-                  {currentChapter.theoryStatus} ({currentChapter.theoryPercent}%)
-                </span>
+              {/* Row 2: Built-in Playback Speed Control + 2.5x/3x Guide */}
+              <div className="flex flex-wrap items-center justify-between gap-2.5 p-2.5 bg-slate-950/60 border border-white/[0.06] rounded-xl text-xs">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1 mr-1">
+                    <Gauge className="w-3.5 h-3.5 text-amber-400" />
+                    Speed:
+                  </span>
+                  {[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => (
+                    <button
+                      key={rate}
+                      type="button"
+                      onClick={() => handleSetSpeed(rate)}
+                      className={`px-2 py-0.5 rounded-lg font-mono text-[11px] font-medium transition-all cursor-pointer ${
+                        currentSpeed === rate
+                          ? 'bg-amber-400 text-slate-950 font-bold shadow-sm'
+                          : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/[0.06]'
+                      }`}
+                    >
+                      {rate}x
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setShowSpeedModal(true)}
+                    className="text-[11px] text-amber-300 hover:text-amber-200 underline decoration-amber-400/40 hover:decoration-amber-300 flex items-center gap-1 cursor-pointer font-medium"
+                    title="Learn why bookmarklets don't work on iframes & how to watch in 2.5x/3x"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Need 2.5x or 3x?</span>
+                  </button>
+
+                  {videoId && (
+                    <a
+                      href={`https://www.youtube.com/watch?v=${videoId}${currentTime > 0 ? `&t=${currentTime}s` : ''}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-2.5 py-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-[11px] rounded-lg transition-all flex items-center gap-1"
+                      title="Open video at this exact second on YouTube (where your bookmarklet works directly)"
+                    >
+                      <ExternalLink className="w-3 h-3 text-slate-400" />
+                      <span>Open on YouTube ({formatSeconds(currentTime)})</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -919,6 +999,124 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* 2.5x / 3x Speed Unlocker Guide Modal */}
+      {showSpeedModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div 
+            className="bg-[#0c1220] border border-white/[0.1] rounded-2xl sm:rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <Zap className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white">How to Watch at 2.5x or 3x Speed</h3>
+                  <p className="text-[11px] text-slate-400 font-mono">Fast Revision & One-Shot Playback</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSpeedModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs leading-relaxed custom-scrollbar">
+              {/* Why the bookmarklet said 'No video element found' */}
+              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/[0.08] space-y-2">
+                <div className="flex items-center gap-1.5 font-semibold text-amber-300 text-xs">
+                  <HelpCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>Why does your bookmarklet say "No video element found"?</span>
+                </div>
+                <p className="text-slate-300 text-[11px]">
+                  Your bookmarklet runs <code className="px-1.5 py-0.5 rounded bg-white/[0.06] text-amber-200 font-mono text-[10px]">document.querySelectorAll('video')</code> on the main page. Because YouTube runs inside an isolated <code className="px-1.5 py-0.5 rounded bg-white/[0.06] text-cyan-200 font-mono text-[10px]">&lt;iframe&gt;</code>, browser security (<strong>Same-Origin Policy</strong>) prevents scripts on one website from accessing the video element inside a third-party frame.
+                </p>
+              </div>
+
+              {/* Solution 1: Free Browser Extension (Best for in-app watching) */}
+              <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-bold text-emerald-300 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] text-emerald-300">1</span>
+                    <span>Best In-App: "Video Speed Controller" Extension</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                    Recommended
+                  </span>
+                </div>
+                <p className="text-slate-300 text-[11px]">
+                  Browser extensions have native frame-injection permissions (<code className="text-emerald-300 font-mono text-[10px]">all_frames: true</code>), so they can control YouTube video playback directly inside this webapp up to <strong>4x or even 10x</strong>!
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.06] space-y-1 font-mono text-[11px]">
+                  <div className="text-slate-400">• Press <kbd className="px-1.5 py-0.5 bg-slate-800 text-emerald-300 rounded border border-slate-700 font-bold">D</kbd> on your keyboard to speed up (+0.1x per press, easily reaching 2.5x or 3x).</div>
+                  <div className="text-slate-400">• Press <kbd className="px-1.5 py-0.5 bg-slate-800 text-rose-300 rounded border border-slate-700 font-bold">S</kbd> to slow down.</div>
+                  <div className="text-slate-400">• Press <kbd className="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded border border-slate-700 font-bold">R</kbd> to reset back to normal 1.0x speed.</div>
+                </div>
+                <div className="pt-1">
+                  <a
+                    href="https://chromewebstore.google.com/detail/video-speed-controller/nffaoalbilbmmfgbnbgppjihopabppdk"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition-colors"
+                  >
+                    <span>Get Video Speed Controller (Chrome / Edge / Brave)</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Solution 2: One-Click Open on YouTube at Current Timestamp */}
+              <div className="p-3.5 rounded-xl bg-cyan-500/5 border border-cyan-500/20 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-cyan-300 text-xs">
+                  <span className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px] text-cyan-300">2</span>
+                  <span>Use Your Bookmarklet Directly on YouTube</span>
+                </div>
+                <p className="text-slate-300 text-[11px]">
+                  Click the <strong>"Open on YouTube"</strong> button below the video. It opens this exact lecture on YouTube at your current timestamp ({formatSeconds(currentTime)}), where your JavaScript bookmarklet works without any restrictions!
+                </p>
+                {videoId && (
+                  <a
+                    href={`https://www.youtube.com/watch?v=${videoId}${currentTime > 0 ? `&t=${currentTime}s` : ''}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[11px] transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    <span>Launch on YouTube at {formatSeconds(currentTime)}</span>
+                  </a>
+                )}
+              </div>
+
+              {/* Solution 3: Native WebApp Toolbar */}
+              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+                <div className="flex items-center gap-2 font-bold text-slate-200 text-xs">
+                  <span className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-slate-300">3</span>
+                  <span>Built-in Speed Buttons (Up to 2.0x)</span>
+                </div>
+                <p className="text-slate-400 text-[11px]">
+                  For speeds between 0.75x and 2.0x, you don't need any extension or bookmarklet. Simply tap the <strong>0.75x, 1x, 1.25x, 1.5x, 1.75x, or 2x</strong> buttons directly below the player.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-3 sm:p-4 border-t border-white/[0.08] flex justify-end bg-white/[0.01]">
+              <button
+                onClick={() => setShowSpeedModal(false)}
+                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+              >
+                Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

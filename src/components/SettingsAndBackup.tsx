@@ -280,7 +280,7 @@ export const SettingsAndBackup: React.FC<SettingsAndBackupProps> = ({
                 <span className="text-[11px] text-slate-400 block">Cloud Status:</span>
                 <span className="text-xs font-mono text-emerald-400 font-medium flex items-center sm:justify-end gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{isSyncing ? 'Syncing...' : lastSyncedAt ? `Saved at ${new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Connected'}</span>
+                  <span>{isSyncing ? 'Syncing...' : 'Auto-Sync Active'}</span>
                 </span>
               </div>
             </div>
