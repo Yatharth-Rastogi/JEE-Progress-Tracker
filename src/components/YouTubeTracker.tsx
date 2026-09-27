@@ -357,53 +357,53 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
   const { mainTitle, subtitle } = splitChapterTitle(currentChapter.name);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header Bar with Chapter Selector */}
-      <div className="bg-slate-900/95 border border-slate-800 rounded-2xl p-5 shadow-2xl backdrop-blur-md">
-        <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-5">
+      <div className="bg-slate-900/50 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4 sm:gap-5">
           {/* Chapter Title & Hierarchical Badges */}
           <div className="space-y-2 flex-1 min-w-0">
             {/* Top Structured Badge Row */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 text-cyan-400 text-[11px] font-bold uppercase tracking-wider bg-cyan-950/70 border border-cyan-800/60 px-2.5 py-0.5 rounded-lg">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <div className="flex items-center gap-1.5 text-cyan-400 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded-lg">
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400" />
                 <span>Theory Mastery</span>
               </div>
 
-              <span className={`text-[11px] px-2.5 py-0.5 rounded-lg font-bold border ${
-                currentChapter.subject === 'Physics' ? 'bg-indigo-950/90 text-indigo-300 border-indigo-700/60' :
-                currentChapter.subject === 'Chemistry' ? 'bg-emerald-950/90 text-emerald-300 border-emerald-700/60' :
-                'bg-cyan-950/90 text-cyan-300 border-cyan-700/60'
+              <span className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-semibold border ${
+                currentChapter.subject === 'Physics' ? 'bg-indigo-950/70 text-indigo-300 border-indigo-700/50' :
+                currentChapter.subject === 'Chemistry' ? 'bg-emerald-950/70 text-emerald-300 border-emerald-700/50' :
+                'bg-cyan-950/70 text-cyan-300 border-cyan-700/50'
               }`}>
                 {currentChapter.subject}
               </span>
 
-              <span className="text-[11px] px-2.5 py-0.5 rounded-lg font-medium bg-slate-800/80 text-slate-300 border border-slate-700">
+              <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-medium bg-white/[0.04] text-slate-300 border border-white/[0.06]">
                 {currentChapter.unit}
               </span>
 
-              <span className={`text-[11px] px-2.5 py-0.5 rounded-lg font-bold border ${
-                currentChapter.priority === 'Critical' ? 'bg-rose-950/90 text-rose-300 border-rose-700/60' :
-                currentChapter.priority === 'High' ? 'bg-amber-950/90 text-amber-300 border-amber-700/60' :
+              <span className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-bold border ${
+                currentChapter.priority === 'Critical' ? 'bg-rose-950/80 text-rose-300 border-rose-700/60' :
+                currentChapter.priority === 'High' ? 'bg-amber-950/80 text-amber-300 border-amber-700/60' :
                 'bg-slate-800 text-slate-400 border-slate-700'
               }`}>
-                {currentChapter.priority} Priority
+                {currentChapter.priority}
               </span>
 
-              <span className="text-[11px] px-2.5 py-0.5 rounded-lg font-mono text-cyan-300 bg-slate-950/90 border border-slate-800">
+              <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-mono text-cyan-300 bg-white/[0.03] border border-white/[0.06]">
                 Ch #{currentChapter.id.split('-')[1]}
               </span>
             </div>
 
             {/* Main Headline & Subtitle */}
-            <div className="pt-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug break-words">
+            <div className="pt-0.5">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-snug break-words">
                 {mainTitle}
               </h1>
               {subtitle && (
-                <div className="mt-1.5 flex items-start gap-1.5 text-xs text-slate-300">
-                  <span className="text-cyan-400 font-semibold shrink-0">Key Topics:</span>
-                  <span className="text-slate-300 bg-slate-950/80 border border-slate-800 px-2 py-0.5 rounded-md font-mono text-[11px] leading-relaxed">
+                <div className="mt-1 flex items-start gap-1.5 text-xs text-slate-300">
+                  <span className="text-cyan-400 font-semibold shrink-0 text-[11px]">Key Topics:</span>
+                  <span className="text-slate-300 bg-white/[0.03] border border-white/[0.06] px-2 py-0.5 rounded-md font-mono text-[11px] leading-relaxed">
                     {subtitle}
                   </span>
                 </div>
@@ -412,30 +412,30 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
           </div>
 
           {/* Subject Filter + Quick Jump Navigation */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 xl:self-start shrink-0 pt-1">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 xl:self-start shrink-0 pt-0.5">
             {/* Subject Filter Pills */}
-            <div className="flex rounded-xl bg-slate-950/90 p-1 border border-slate-800 self-start sm:self-auto">
+            <div className="flex rounded-xl bg-[#080c14] p-1 border border-white/[0.08] self-start sm:self-auto">
               {(['All', 'Physics', 'Chemistry', 'Mathematics'] as const).map((sub) => (
                 <button
                   key={sub}
                   onClick={() => setSelectedSubjectFilter(sub)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-all ${
                     selectedSubjectFilter === sub
                       ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  {sub === 'Mathematics' ? 'Maths' : sub}
+                  {sub === 'Mathematics' ? 'Math' : sub === 'All' ? 'All' : sub.slice(0, 4)}
                 </button>
               ))}
             </div>
 
             {/* Prev / Dropdown / Next Controls */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
               <button
                 onClick={handlePrevChapter}
                 title="Previous Chapter"
-                className="p-2 rounded-xl bg-slate-950/90 border border-slate-700/80 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/50 transition-colors shadow-sm"
+                className="p-2 rounded-xl bg-[#080c14] border border-white/[0.08] text-slate-300 hover:text-cyan-300 hover:border-white/20 transition-all shrink-0 active:scale-95"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -444,7 +444,7 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
                 <select
                   value={currentChapter.id}
                   onChange={(e) => onSelectChapter(e.target.value)}
-                  className="w-full sm:w-72 lg:w-80 bg-slate-950/90 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 truncate cursor-pointer shadow-sm"
+                  className="w-full sm:w-64 lg:w-72 bg-[#080c14] border border-white/[0.08] text-white rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-cyan-500 truncate cursor-pointer shadow-sm"
                 >
                   {filteredChapters.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -457,7 +457,7 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
               <button
                 onClick={handleNextChapter}
                 title="Next Chapter"
-                className="p-2 rounded-xl bg-slate-950/90 border border-slate-700/80 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/50 transition-colors shadow-sm"
+                className="p-2 rounded-xl bg-[#080c14] border border-white/[0.08] text-slate-300 hover:text-cyan-300 hover:border-white/20 transition-all shrink-0 active:scale-95"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -466,21 +466,21 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
         </div>
 
         {/* Video URL Input & Preset Controls */}
-        <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-col md:flex-row gap-2.5 items-stretch">
+        <div className="pt-3 border-t border-white/[0.06] flex flex-col md:flex-row gap-2.5 items-stretch">
           <div className="relative flex-1">
             <input
               type="text"
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
               placeholder="Paste YouTube Lecture / One-Shot URL (e.g. https://www.youtube.com/watch?v=...)"
-              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl pl-3 pr-24 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
+              className="w-full bg-[#080c14] border border-white/[0.08] text-slate-100 rounded-xl pl-3 pr-20 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
             />
             {inputUrl && (
               <a
                 href={inputUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="absolute right-2 top-1.5 text-slate-400 hover:text-cyan-400 text-xs flex items-center gap-1 bg-slate-800/90 hover:bg-slate-700 px-2 py-1 rounded-lg border border-slate-700 transition-colors"
+                className="absolute right-2 top-1.5 text-slate-400 hover:text-cyan-400 text-[11px] flex items-center gap-1 bg-white/[0.04] hover:bg-white/[0.08] px-2 py-1 rounded-lg border border-white/[0.08] transition-colors"
               >
                 Open <ExternalLink className="w-3 h-3" />
               </a>
@@ -490,10 +490,10 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleSaveUrl}
-              className="flex-1 sm:flex-initial px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition-colors border border-slate-700 flex items-center justify-center gap-1.5 shadow-sm"
+              className="flex-1 sm:flex-initial px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-semibold rounded-xl transition-all border border-white/[0.08] flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
             >
               <Save className="w-3.5 h-3.5 text-cyan-400" />
-              Set Video
+              <span>Set Video</span>
             </button>
 
             <button
@@ -503,22 +503,22 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
                 onUpdateChapter(currentChapter.id, { videoUrl: curatedVideo.url });
               }}
               title="Load curated high-yield PW Manzil / community lecture"
-              className="px-3.5 py-2 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-700/60 text-cyan-300 hover:text-cyan-200 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
+              className="flex-1 sm:flex-initial px-3.5 py-2 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-700/50 text-cyan-300 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="hidden sm:inline">Load</span> Verified Preset
+              <span>Verified Preset</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Main Study Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
         {/* Left Column: YouTube Player & Video Stats */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl overflow-hidden">
+          <div className="bg-slate-900/50 backdrop-blur-md border border-white/[0.08] rounded-2xl p-3 sm:p-4 shadow-sm overflow-hidden">
             {/* Player Container */}
-            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black border border-slate-800 shadow-inner flex items-center justify-center">
+            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black border border-white/[0.08] shadow-inner flex items-center justify-center">
               <div
                 ref={playerContainerRef}
                 className={`w-full h-full ${!videoId ? 'hidden' : 'block'}`}

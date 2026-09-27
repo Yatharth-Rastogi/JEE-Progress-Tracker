@@ -4,7 +4,7 @@ export type Priority = 'Critical' | 'High' | 'Medium';
 
 export type TheoryStatus = 'Not Started' | 'In Progress' | 'Completed';
 
-export type WeaknessLevel = 'Weak' | 'Moderate' | 'Strong';
+export type WeaknessLevel = 'Very Weak' | 'Weak' | 'Moderate' | 'Strong';
 
 export type ErrorType = 
   | 'Conceptual Error' 

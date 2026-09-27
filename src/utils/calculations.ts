@@ -17,26 +17,52 @@ export function getGenuineSolvesPercent(chapter: Pick<Chapter, 'pyqAttempted' | 
 
 /**
  * Weakness Level rule:
- * - Strong/Mastered: PYQ Accuracy >= 75% AND Genuine Solves >= 10
- * - Weak: (pyqAttempted > 0 && pyqAccuracy < 50%) OR (pyqAttempted - pyqCorrect > 5)
- * - Moderate: otherwise
+ * - Very Weak: Untouched chapters (0% theory & 0 questions) OR severe failure (accuracy < 40% or >=6 errors)
+ * - Weak: Low accuracy (accuracy < 55% or >3 errors)
+ * - Moderate: Theory started/completed or basic questions attempted with decent grasp
+ * - Strong: PYQ Accuracy >= 75% AND Genuine Solves >= 10 AND attempted >= 10
  */
-export function calculateWeaknessLevel(chapter: Pick<Chapter, 'pyqAttempted' | 'pyqCorrect' | 'genuineSolves'>): WeaknessLevel {
+export function calculateWeaknessLevel(
+  chapter: Pick<Chapter, 'pyqAttempted' | 'pyqCorrect' | 'genuineSolves'> & {
+    basicAttempted?: number;
+    theoryPercent?: number;
+    theoryStatus?: string;
+  }
+): WeaknessLevel {
   const attempted = chapter.pyqAttempted || 0;
   const correct = chapter.pyqCorrect || 0;
   const genuineSolves = chapter.genuineSolves || 0;
+  const basicAttempted = chapter.basicAttempted || 0;
+  const theoryPercent = chapter.theoryPercent || 0;
   const accuracy = attempted > 0 ? (correct / attempted) * 100 : 0;
   const errorCount = attempted - correct;
 
+  // 1. Untouched / Not Started: If student hasn't touched theory and hasn't solved any questions
+  if (attempted === 0 && basicAttempted === 0 && theoryPercent === 0) {
+    return 'Very Weak';
+  }
+
+  // 2. High Mastery: At least 10 PYQs attempted with >= 75% accuracy and >= 10 genuine solves
   if (attempted >= 10 && accuracy >= 75 && genuineSolves >= 10) {
     return 'Strong';
   }
 
-  if (attempted > 0 && (accuracy < 50 || errorCount > 5)) {
+  // 3. Very Weak: Practiced with severe issues (accuracy < 40% or error count >= 6)
+  if (attempted > 0 && (accuracy < 40 || errorCount >= 6)) {
+    return 'Very Weak';
+  }
+
+  // 4. Weak: Practiced with low accuracy (accuracy < 55% or error count > 3)
+  if (attempted > 0 && (accuracy < 55 || errorCount > 3)) {
     return 'Weak';
   }
 
-  return 'Moderate';
+  // 5. If theory has started/completed or basic questions solved with no major failures
+  if (theoryPercent > 0 || basicAttempted > 0 || (attempted > 0 && accuracy >= 55)) {
+    return 'Moderate';
+  }
+
+  return 'Weak';
 }
 
 /**

@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "User profile with display name, email, and sync timestamps",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "User Google email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "User profile photo URL" },
+        "lastSyncedAt": { "type": "string", "description": "ISO timestamp of last cloud sync" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of account creation" }
+      },
+      "required": ["uid", "lastSyncedAt"]
+    },
+    "userProgress": {
+      "title": "User JEE Progress",
+      "description": "Complete JEE syllabus progress, practice sessions, mock tests, and error logs",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "chapters": { "type": "string", "description": "JSON serialized string of syllabus chapters progress" },
+        "practiceSessions": { "type": "string", "description": "JSON serialized string of practice sessions" },
+        "mockTests": { "type": "string", "description": "JSON serialized string of mock tests" },
+        "errorLogs": { "type": "string", "description": "JSON serialized string of error logs" },
+        "targetExamYear": { "type": "number", "description": "Target JEE exam year" },
+        "dailyGoalQuestions": { "type": "number", "description": "Daily question goal count" },
+        "activeChapterIdForStudyRoom": { "type": "string", "description": "Currently active study room chapter ID" },
+        "lastSyncedAt": { "type": "string", "description": "ISO timestamp of sync" }
+      },
+      "required": ["uid", "lastSyncedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "userProfile",
+      "description": "Stores user profile and account metadata"
+    },
+    "/users/{userId}/progress/{progressId}": {
+      "schema": "userProgress",
+      "description": "Stores user syllabus progress, error logs, and practice sessions for safe cloud persistence"
+    }
+  }
+}

@@ -163,32 +163,32 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
   const availableChapters = chapters.filter((c) => c.subject === selectedSubject);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="bg-[#0c1220] border border-white/[0.1] rounded-2xl sm:rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-800/90 flex items-center justify-between bg-slate-950/60">
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-              <Calculator className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+              <Calculator className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight">Log Practice / PYQ Session</h2>
-              <p className="text-xs text-slate-400">Record genuine vs. guessed solves with JEE marking scheme</p>
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">Log Practice / PYQ Session</h2>
+              <p className="text-[11px] sm:text-xs text-slate-400">Record genuine vs. guessed solves with JEE marking scheme</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5 flex-1">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1">
           {errorMessage && (
             <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -197,18 +197,18 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
           )}
 
           {/* Subject & Type Tabs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">Subject</label>
-              <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800">
+              <div className="flex rounded-xl bg-[#080c14] p-1 border border-white/[0.08]">
                 {(['Physics', 'Chemistry', 'Mathematics'] as const).map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => handleSubjectChange(s)}
-                    className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                       selectedSubject === s
-                        ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                        ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -220,15 +220,15 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">Practice Category</label>
-              <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800">
+              <div className="flex rounded-xl bg-[#080c14] p-1 border border-white/[0.08]">
                 {(['PYQ Practice', 'Basic Practice'] as const).map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => setPracticeType(t)}
-                    className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                       practiceType === t
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-white/10 text-cyan-300 font-semibold'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -242,12 +242,12 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
           {/* Chapter Selector */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Target Chapter ({availableChapters.length} available)
+              Target Chapter ({availableChapters.length} in {selectedSubject})
             </label>
             <select
               value={selectedChapterId}
               onChange={(e) => setSelectedChapterId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-[#080c14] border border-white/[0.08] text-white rounded-xl px-3 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500"
             >
               {availableChapters.map((ch) => (
                 <option key={ch.id} value={ch.id}>
@@ -258,7 +258,7 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
           </div>
 
           {/* Source / Sheet Name & Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Session Source / Reference
@@ -268,7 +268,7 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder="e.g. JEE Main 2024 Jan 29 S1, Allen Ex-1"
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full bg-[#080c14] border border-white/[0.08] text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
               />
             </div>
             <div>
@@ -277,74 +277,74 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full bg-[#080c14] border border-white/[0.08] text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
               />
             </div>
           </div>
 
           {/* Core Numbers Counter */}
-          <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-4">
+          <div className="p-3.5 sm:p-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-3.5">
             <div className="text-xs font-bold text-white flex items-center justify-between">
               <span>Attempt Breakdown</span>
-              <span className="text-cyan-400 font-mono">JEE Rule (+4 / -1)</span>
+              <span className="text-cyan-400 font-mono text-[11px]">JEE Rule (+4 / -1)</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {/* Attempted */}
               <div className="space-y-1">
-                <span className="text-[11px] text-slate-400 font-medium">Attempted</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium block text-center truncate">Attempted</span>
                 <input
                   type="number"
                   min="1"
                   max="200"
                   value={attempted}
                   onChange={(e) => handleAttemptedChange(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-center text-base font-bold font-mono text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full bg-[#080c14] border border-white/[0.1] rounded-xl py-2 px-2 text-center text-base sm:text-lg font-bold font-mono text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 />
               </div>
 
               {/* Correct */}
               <div className="space-y-1">
-                <span className="text-[11px] text-emerald-400 font-medium">Correct (+4)</span>
+                <span className="text-[10px] sm:text-[11px] text-emerald-400 font-medium block text-center truncate">Correct (+4)</span>
                 <input
                   type="number"
                   min="0"
                   max={attempted}
                   value={correct}
                   onChange={(e) => handleCorrectChange(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-emerald-700/60 rounded-xl py-2 px-3 text-center text-base font-bold font-mono text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-[#080c14] border border-emerald-500/30 rounded-xl py-2 px-2 text-center text-base sm:text-lg font-bold font-mono text-emerald-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
 
               {/* Wrong */}
               <div className="space-y-1">
-                <span className="text-[11px] text-rose-400 font-medium">Wrong (-1)</span>
+                <span className="text-[10px] sm:text-[11px] text-rose-400 font-medium block text-center truncate">Wrong (-1)</span>
                 <input
                   type="number"
                   min="0"
                   max={attempted}
                   value={wrong}
                   onChange={(e) => handleWrongChange(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-rose-700/60 rounded-xl py-2 px-3 text-center text-base font-bold font-mono text-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full bg-[#080c14] border border-rose-500/30 rounded-xl py-2 px-2 text-center text-base sm:text-lg font-bold font-mono text-rose-300 focus:outline-none focus:ring-1 focus:ring-rose-500"
                 />
               </div>
             </div>
 
             {/* Guess Tracker Section */}
-            <div className="pt-3 border-t border-slate-800 space-y-3">
+            <div className="pt-3 border-t border-white/[0.06] space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="text-xs font-semibold text-amber-300 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Guess Tracker (Genuine vs. Guesses)</span>
+                  <span>Guess Diagnostic</span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-mono">
-                  Genuine Solves: <strong className="text-emerald-400">{genuineSolves}</strong>
+                  Genuine: <strong className="text-emerald-400">{genuineSolves}</strong>
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1">
-                  <div className="text-[10px] text-emerald-400/90 font-medium">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                <div className="bg-[#080c14] p-2.5 rounded-xl border border-white/[0.06] space-y-1">
+                  <div className="text-[10px] text-emerald-400/90 font-medium truncate">
                     Guessed Correct (Lucky)
                   </div>
                   <input
@@ -353,13 +353,13 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
                     max={correct}
                     value={guessedCorrect}
                     onChange={(e) => setGuessedCorrect(Math.min(correct, Math.max(0, parseInt(e.target.value) || 0)))}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg py-1 px-2 text-center text-sm font-bold font-mono text-emerald-300"
+                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg py-1 px-2 text-center text-sm font-bold font-mono text-emerald-300 focus:outline-none"
                   />
-                  <div className="text-[9px] text-slate-500">Won +4 by fluke</div>
+                  <div className="text-[9px] text-slate-500">Won +4 on guess</div>
                 </div>
 
-                <div className="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1">
-                  <div className="text-[10px] text-rose-400/90 font-medium">
+                <div className="bg-[#080c14] p-2.5 rounded-xl border border-white/[0.06] space-y-1">
+                  <div className="text-[10px] text-rose-400/90 font-medium truncate">
                     Guessed Wrong (Penalty)
                   </div>
                   <input
@@ -368,15 +368,15 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
                     max={wrong}
                     value={guessedWrong}
                     onChange={(e) => setGuessedWrong(Math.min(wrong, Math.max(0, parseInt(e.target.value) || 0)))}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg py-1 px-2 text-center text-sm font-bold font-mono text-rose-300"
+                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg py-1 px-2 text-center text-sm font-bold font-mono text-rose-300 focus:outline-none"
                   />
-                  <div className="text-[9px] text-slate-500">Lost -1 on a gamble</div>
+                  <div className="text-[9px] text-slate-500">Lost -1 on guess</div>
                 </div>
               </div>
             </div>
 
             {/* Score & Accuracy Calculated Badge */}
-            <div className="pt-2 flex items-center justify-between text-xs font-mono bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+            <div className="pt-2 flex items-center justify-between text-xs font-mono bg-[#080c14] p-2.5 rounded-xl border border-white/[0.06]">
               <div>
                 <span className="text-slate-400">Score: </span>
                 <span className={`font-bold ${score >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
@@ -400,25 +400,25 @@ export const PracticeLoggerModal: React.FC<PracticeLoggerModalProps> = ({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. River boat relative motion angle convention was tricky; needed 2nd read."
               rows={2}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="w-full bg-[#080c14] border border-white/[0.08] rounded-xl p-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+              className="px-3.5 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-1.5"
+              className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl shadow-sm hover:shadow-cyan-500/25 transition-all flex items-center gap-1.5 active:scale-95"
             >
-              <Check className="w-4 h-4" />
-              Save Practice Log
+              <Check className="w-4 h-4 stroke-[2.5]" />
+              <span>Save Practice Log</span>
             </button>
           </div>
         </form>

@@ -174,44 +174,44 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Top Banner & Sub-Tabs */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-slate-900/50 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <div className="flex items-center gap-2 text-rose-400 text-xs font-semibold uppercase tracking-wider mb-1">
-              <TrendingUp className="w-4 h-4" />
+            <div className="flex items-center gap-1.5 text-rose-400 text-[11px] font-semibold uppercase tracking-wider mb-1">
+              <TrendingUp className="w-3.5 h-3.5" />
               <span>Diagnostic Benchmarks</span>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Mock Tests & Mistake Notebook</h1>
-            <p className="text-slate-400 text-xs mt-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Mock Tests & Mistake Notebook</h1>
+            <p className="text-slate-400 text-xs mt-0.5">
               Track official 300-mark mock scores, analyze silly mistakes vs conceptual gaps, and review action items.
             </p>
           </div>
 
-          {/* Sub Tab Switcher */}
-          <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800 self-start sm:self-auto">
+          {/* Sub Tab Switcher - Responsive Grid on mobile */}
+          <div className="grid grid-cols-2 sm:flex rounded-xl bg-[#080c14] p-1 border border-white/[0.08] w-full sm:w-auto">
             <button
               onClick={() => setActiveSubTab('mockTests')}
-              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 sm:px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 activeSubTab === 'mockTests'
-                  ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
+                  ? 'bg-rose-500 text-white shadow-sm font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Trophy className="w-3.5 h-3.5" />
-              Mock Test Tracker ({mockTests.length})
+              <span>Mocks ({mockTests.length})</span>
             </button>
             <button
               onClick={() => setActiveSubTab('errorLog')}
-              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 sm:px-4 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 activeSubTab === 'errorLog'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <AlertTriangle className="w-3.5 h-3.5" />
-              Mistake Notebook ({errorLogs.length})
+              <span>Mistakes ({errorLogs.length})</span>
             </button>
           </div>
         </div>
@@ -253,24 +253,24 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
               mockTests.map((test) => (
                 <div
                   key={test.id}
-                  className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 shadow-xl transition-colors space-y-4"
+                  className="bg-slate-900/50 backdrop-blur-md border border-white/[0.08] hover:border-white/[0.15] rounded-2xl p-4 sm:p-5 shadow-sm transition-all space-y-4"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-rose-950 text-rose-300 border border-rose-800">
+                        <span className="text-[10px] px-2.5 py-0.5 rounded-full font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20">
                           {test.testType}
                         </span>
                         <span className="text-xs text-slate-400 font-mono">
                           {test.date} • {test.durationMinutes} mins
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-white">{test.title}</h3>
+                      <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{test.title}</h3>
                     </div>
 
-                    <div className="flex items-center gap-4 self-end sm:self-center">
-                      <div className="text-right">
-                        <div className="text-2xl font-black font-mono text-cyan-300">
+                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-white/[0.05]">
+                      <div className="text-left sm:text-right">
+                        <div className="text-xl sm:text-2xl font-black font-mono text-cyan-300">
                           {test.totalScore} <span className="text-xs text-slate-400 font-normal">/ {test.maxScore}</span>
                         </div>
                         <div className="text-xs text-slate-400 font-mono">
@@ -280,7 +280,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
 
                       <button
                         onClick={() => onDeleteMockTest(test.id)}
-                        className="p-2 text-slate-500 hover:text-rose-400 rounded-lg transition-colors"
+                        className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all"
                         title="Delete Mock Test"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -289,11 +289,11 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   </div>
 
                   {/* Subject-Wise Score Boxes */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                     {/* Physics */}
-                    <div className="bg-slate-950/80 border border-indigo-900/40 rounded-xl p-3 space-y-1">
+                    <div className="bg-slate-950/60 border border-indigo-500/20 rounded-xl p-3 space-y-1">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-indigo-400 font-bold">Physics</span>
+                        <span className="text-indigo-400 font-semibold">Physics</span>
                         <span className="font-mono font-bold text-white text-sm">
                           {test.physics.score} Marks
                         </span>
@@ -305,9 +305,9 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                     </div>
 
                     {/* Chemistry */}
-                    <div className="bg-slate-950/80 border border-emerald-900/40 rounded-xl p-3 space-y-1">
+                    <div className="bg-slate-950/60 border border-emerald-500/20 rounded-xl p-3 space-y-1">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-emerald-400 font-bold">Chemistry</span>
+                        <span className="text-emerald-400 font-semibold">Chemistry</span>
                         <span className="font-mono font-bold text-white text-sm">
                           {test.chemistry.score} Marks
                         </span>
@@ -319,9 +319,9 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                     </div>
 
                     {/* Maths */}
-                    <div className="bg-slate-950/80 border border-cyan-900/40 rounded-xl p-3 space-y-1">
+                    <div className="bg-slate-950/60 border border-cyan-500/20 rounded-xl p-3 space-y-1">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-cyan-400 font-bold">Mathematics</span>
+                        <span className="text-cyan-400 font-semibold">Mathematics</span>
                         <span className="font-mono font-bold text-white text-sm">
                           {test.maths.score} Marks
                         </span>
@@ -334,7 +334,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   </div>
 
                   {test.notes && (
-                    <div className="p-2.5 bg-slate-950/50 border border-slate-800 rounded-xl text-xs text-slate-300 italic">
+                    <div className="p-2.5 bg-slate-950/50 border border-white/[0.05] rounded-xl text-xs text-slate-300 italic">
                       Takeaway: "{test.notes}"
                     </div>
                   )}
@@ -349,27 +349,27 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
       {/* SUB-TAB 2: ERROR LOG / MISTAKE NOTEBOOK */}
       {/* ==================================================== */}
       {activeSubTab === 'errorLog' && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Error Type Distribution Analytics */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+          <div className="bg-slate-900/50 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <h3 className="text-xs sm:text-sm font-semibold text-white flex items-center gap-2">
                 <PieChart className="w-4 h-4 text-amber-400" />
                 Mistake Root-Cause Diagnostics
               </h3>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-[11px] sm:text-xs text-slate-400 font-mono">
                 {errorLogs.filter((e) => !e.resolved).length} Unresolved Errors
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 pt-1">
               {(
                 [
-                  { type: 'Conceptual Error', icon: '🔴', color: 'border-rose-800/80 bg-rose-950/40 text-rose-300' },
-                  { type: 'Calculation Mistake', icon: '🟡', color: 'border-amber-800/80 bg-amber-950/40 text-amber-300' },
-                  { type: 'Time Pressure', icon: '⏱️', color: 'border-cyan-800/80 bg-cyan-950/40 text-cyan-300' },
-                  { type: 'Silly Mistake', icon: '🤦', color: 'border-purple-800/80 bg-purple-950/40 text-purple-300' },
-                  { type: 'Misread Question', icon: '📖', color: 'border-indigo-800/80 bg-indigo-950/40 text-indigo-300' },
+                  { type: 'Conceptual Error', icon: '🔴', color: 'border-rose-500/20 bg-rose-500/10 text-rose-300' },
+                  { type: 'Calculation Mistake', icon: '🟡', color: 'border-amber-500/20 bg-amber-500/10 text-amber-300' },
+                  { type: 'Time Pressure', icon: '⏱️', color: 'border-cyan-500/20 bg-cyan-500/10 text-cyan-300' },
+                  { type: 'Silly Mistake', icon: '🤦', color: 'border-purple-500/20 bg-purple-500/10 text-purple-300' },
+                  { type: 'Misread Question', icon: '📖', color: 'border-indigo-500/20 bg-indigo-500/10 text-indigo-300' },
                 ] as const
               ).map(({ type, icon, color }) => (
                 <div
@@ -377,9 +377,9 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   className={`p-2.5 rounded-xl border ${color} space-y-1`}
                 >
                   <div className="text-[11px] font-medium truncate flex items-center gap-1">
-                    <span>{icon}</span> {type}
+                    <span>{icon}</span> <span className="truncate">{type}</span>
                   </div>
-                  <div className="text-lg font-black font-mono">
+                  <div className="text-base sm:text-lg font-bold font-mono">
                     {errorTypeCounts[type] || 0}
                   </div>
                 </div>
@@ -388,13 +388,13 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
           </div>
 
           {/* Action & Filter Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-slate-900/50 backdrop-blur-md border border-white/[0.08] rounded-2xl p-3 sm:p-4 shadow-sm">
+            <div className="grid grid-cols-1 sm:flex flex-wrap items-center gap-2">
               {/* Subject Filter */}
               <select
                 value={errorFilterSubject}
                 onChange={(e) => setErrorFilterSubject(e.target.value as any)}
-                className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="bg-slate-950/80 border border-white/[0.08] text-slate-200 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-amber-500/50"
               >
                 <option value="All">All Subjects</option>
                 <option value="Physics">Physics</option>
@@ -406,7 +406,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
               <select
                 value={errorFilterType}
                 onChange={(e) => setErrorFilterType(e.target.value as any)}
-                className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="bg-slate-950/80 border border-white/[0.08] text-slate-200 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-amber-500/50"
               >
                 <option value="All">All Mistake Types</option>
                 <option value="Conceptual Error">Conceptual Error</option>
@@ -420,7 +420,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
               <select
                 value={errorFilterResolved}
                 onChange={(e) => setErrorFilterResolved(e.target.value as any)}
-                className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="bg-slate-950/80 border border-white/[0.08] text-slate-200 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-amber-500/50"
               >
                 <option value="All">All Statuses</option>
                 <option value="Unresolved">Unresolved Only</option>
@@ -430,10 +430,10 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
 
             <button
               onClick={() => setShowAddErrorModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
-              Log Mistake / Wrong Question
+              Log Mistake
             </button>
           </div>
 
@@ -547,26 +547,26 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
       {/* MODAL: ADD MOCK TEST */}
       {/* ==================================================== */}
       {showAddMockModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
           <div 
-            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+            className="bg-[#0c1220] border border-white/[0.1] rounded-2xl sm:rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+            <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
               <div className="flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-rose-400" />
-                <h3 className="text-base font-bold text-white">Record Full Mock Test</h3>
+                <h3 className="text-sm sm:text-base font-bold text-white">Record Full Mock Test</h3>
               </div>
               <button
                 onClick={() => setShowAddMockModal(false)}
-                className="p-1 rounded text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveMockTest} className="p-6 overflow-y-auto space-y-5 flex-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSaveMockTest} className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Test Name</label>
                   <input
@@ -575,7 +575,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                     onChange={(e) => setMockTitle(e.target.value)}
                     required
                     placeholder="e.g. Allen Leader Test 4, JEE Main Shift 1"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                    className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-rose-500/50"
                   />
                 </div>
                 <div>
@@ -585,163 +585,163 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                     value={mockDate}
                     onChange={(e) => setMockDate(e.target.value)}
                     required
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                    className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-rose-500/50"
                   />
                 </div>
               </div>
 
               {/* Subject Breakdown Form */}
               <div className="space-y-3">
-                <div className="text-xs font-bold text-white">Subject Marks (JEE +4 / -1 Rule)</div>
+                <div className="text-xs font-semibold text-white">Subject Marks (JEE +4 / -1 Rule)</div>
 
                 {/* Physics */}
-                <div className="p-3 bg-slate-950/80 border border-indigo-900/40 rounded-xl space-y-2">
+                <div className="p-3 bg-slate-950/50 border border-indigo-500/20 rounded-xl space-y-2">
                   <div className="text-xs font-bold text-indigo-400">Physics</div>
-                  <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] text-slate-400">Attempted</span>
+                      <span className="text-[10px] text-slate-400 block mb-0.5">Attempted</span>
                       <input
                         type="number"
                         min="0"
                         max="30"
                         value={phyAtt}
                         onChange={(e) => setPhyAtt(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-white font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-white font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-emerald-400">Correct (+4)</span>
+                      <span className="text-[10px] text-emerald-400 block mb-0.5">Correct (+4)</span>
                       <input
                         type="number"
                         min="0"
                         max={phyAtt}
                         value={phyCor}
                         onChange={(e) => setPhyCor(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-emerald-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-emerald-300 font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-rose-400">Wrong (-1)</span>
+                      <span className="text-[10px] text-rose-400 block mb-0.5">Wrong (-1)</span>
                       <input
                         type="number"
                         min="0"
                         max={phyAtt}
                         value={phyWro}
                         onChange={(e) => setPhyWro(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-rose-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-rose-300 font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-amber-400">Guessed Correct</span>
+                      <span className="text-[10px] text-amber-400 block mb-0.5">Guessed Correct</span>
                       <input
                         type="number"
                         min="0"
                         max={phyCor}
                         value={phyGuessCor}
                         onChange={(e) => setPhyGuessCor(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-amber-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-amber-300 font-mono"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Chemistry */}
-                <div className="p-3 bg-slate-950/80 border border-emerald-900/40 rounded-xl space-y-2">
+                <div className="p-3 bg-slate-950/50 border border-emerald-500/20 rounded-xl space-y-2">
                   <div className="text-xs font-bold text-emerald-400">Chemistry</div>
-                  <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] text-slate-400">Attempted</span>
+                      <span className="text-[10px] text-slate-400 block mb-0.5">Attempted</span>
                       <input
                         type="number"
                         min="0"
                         max="30"
                         value={chemAtt}
                         onChange={(e) => setChemAtt(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-white font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-white font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-emerald-400">Correct (+4)</span>
+                      <span className="text-[10px] text-emerald-400 block mb-0.5">Correct (+4)</span>
                       <input
                         type="number"
                         min="0"
                         max={chemAtt}
                         value={chemCor}
                         onChange={(e) => setChemCor(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-emerald-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-emerald-300 font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-rose-400">Wrong (-1)</span>
+                      <span className="text-[10px] text-rose-400 block mb-0.5">Wrong (-1)</span>
                       <input
                         type="number"
                         min="0"
                         max={chemAtt}
                         value={chemWro}
                         onChange={(e) => setChemWro(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-rose-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-rose-300 font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-amber-400">Guessed Correct</span>
+                      <span className="text-[10px] text-amber-400 block mb-0.5">Guessed Correct</span>
                       <input
                         type="number"
                         min="0"
                         max={chemCor}
                         value={chemGuessCor}
                         onChange={(e) => setChemGuessCor(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-amber-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-amber-300 font-mono"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Maths */}
-                <div className="p-3 bg-slate-950/80 border border-cyan-900/40 rounded-xl space-y-2">
+                <div className="p-3 bg-slate-950/50 border border-cyan-500/20 rounded-xl space-y-2">
                   <div className="text-xs font-bold text-cyan-400">Mathematics</div>
-                  <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] text-slate-400">Attempted</span>
+                      <span className="text-[10px] text-slate-400 block mb-0.5">Attempted</span>
                       <input
                         type="number"
                         min="0"
                         max="30"
                         value={mathAtt}
                         onChange={(e) => setMathAtt(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-white font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-white font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-emerald-400">Correct (+4)</span>
+                      <span className="text-[10px] text-emerald-400 block mb-0.5">Correct (+4)</span>
                       <input
                         type="number"
                         min="0"
                         max={mathAtt}
                         value={mathCor}
                         onChange={(e) => setMathCor(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-emerald-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-emerald-300 font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-rose-400">Wrong (-1)</span>
+                      <span className="text-[10px] text-rose-400 block mb-0.5">Wrong (-1)</span>
                       <input
                         type="number"
                         min="0"
                         max={mathAtt}
                         value={mathWro}
                         onChange={(e) => setMathWro(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-rose-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-rose-300 font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-amber-400">Guessed Correct</span>
+                      <span className="text-[10px] text-amber-400 block mb-0.5">Guessed Correct</span>
                       <input
                         type="number"
                         min="0"
                         max={mathCor}
                         value={mathGuessCor}
                         onChange={(e) => setMathGuessCor(parseInt(e.target.value) || 0)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded py-1 px-2 text-center text-amber-300 font-mono"
+                        className="w-full bg-slate-900 border border-white/[0.08] rounded-lg py-1.5 px-2 text-center text-amber-300 font-mono"
                       />
                     </div>
                   </div>
@@ -749,9 +749,9 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
               </div>
 
               {/* Total preview */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center text-xs font-mono">
-                <span>Calculated Total:</span>
-                <span className="text-base font-bold text-cyan-300">
+              <div className="p-3 bg-slate-950/70 rounded-xl border border-white/[0.08] flex justify-between items-center text-xs font-mono">
+                <span className="text-slate-400">Calculated Total:</span>
+                <span className="text-sm sm:text-base font-bold text-cyan-300">
                   {calculateJeeScore(phyCor, phyWro) + calculateJeeScore(chemCor, chemWro) + calculateJeeScore(mathCor, mathWro)} / 300 Marks
                 </span>
               </div>
@@ -763,21 +763,21 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   onChange={(e) => setMockNotes(e.target.value)}
                   placeholder="e.g. Physics speed was great; Maths coordinate section took 15 mins extra..."
                   rows={2}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-rose-500/50"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowAddMockModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-600/20"
+                  className="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-600/20 transition-all cursor-pointer"
                 >
                   Save Mock Result
                 </button>
@@ -791,26 +791,26 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
       {/* MODAL: ADD ERROR LOG */}
       {/* ==================================================== */}
       {showAddErrorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
           <div 
-            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+            className="bg-[#0c1220] border border-white/[0.1] rounded-2xl sm:rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+            <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
-                <h3 className="text-base font-bold text-white">Log Mistake in Notebook</h3>
+                <h3 className="text-sm sm:text-base font-bold text-white">Log Mistake in Notebook</h3>
               </div>
               <button
                 onClick={() => setShowAddErrorModal(false)}
-                className="p-1 rounded text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveErrorLog} className="p-6 overflow-y-auto space-y-4 flex-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSaveErrorLog} className="p-4 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4 flex-1 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Subject</label>
                   <select
@@ -821,7 +821,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                       const subCh = chapters.find((c) => c.subject === sub);
                       if (subCh) setErrorChapterId(subCh.id);
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                    className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                   >
                     <option value="Physics">Physics</option>
                     <option value="Chemistry">Chemistry</option>
@@ -834,7 +834,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   <select
                     value={errorType}
                     onChange={(e) => setErrorType(e.target.value as ErrorType)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                    className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                   >
                     <option value="Conceptual Error">Conceptual Error</option>
                     <option value="Calculation Mistake">Calculation Mistake</option>
@@ -850,7 +850,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                 <select
                   value={errorChapterId}
                   onChange={(e) => setErrorChapterId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                 >
                   {chapters
                     .filter((c) => c.subject === errorSubject)
@@ -872,7 +872,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   onChange={(e) => setErrorSource(e.target.value)}
                   required
                   placeholder="e.g. Mock 4 - Q12 or JEE 2024 Jan 27 S1"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                 />
               </div>
 
@@ -885,7 +885,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   onChange={(e) => setErrorQuestionText(e.target.value)}
                   rows={2}
                   placeholder="Describe where you went wrong or the trap in the question..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                 />
               </div>
 
@@ -899,7 +899,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   required
                   rows={2}
                   placeholder="e.g. For adiabatic process, T * V^(gamma-1) = constant, not P * V = constant."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                 />
               </div>
 
@@ -913,21 +913,21 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   onChange={(e) => setErrorActionItem(e.target.value)}
                   required
                   placeholder="e.g. Revise adiabatic expansion work formula; solve 5 PYQs."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white"
+                  className="w-full bg-slate-950/80 border border-white/[0.08] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowAddErrorModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20"
+                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
                 >
                   Save to Mistake Notebook
                 </button>
