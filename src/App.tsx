@@ -94,15 +94,23 @@ export default function App() {
         setSyncError(null);
         setCloudNotification(`Welcome back, ${firebaseUser.displayName || 'Aspirant'}! Your progress was automatically restored from Google Cloud.`);
       } else {
-        // New Google account without saved cloud data: upload current state so it begins synced
-        const time = await saveProgressToCloud(firebaseUser, appState);
-        setLastSyncedAt(time);
-        setSyncError(null);
-        setCloudNotification('Cloud sync connected! All changes will now be automatically saved to Google Cloud.');
+        // First-time sync or using local data: persist to cloud
+        try {
+          const time = await saveProgressToCloud(firebaseUser, appState);
+          setLastSyncedAt(time);
+          setSyncError(null);
+          setCloudNotification('Cloud sync connected! All changes will now be automatically saved to Google Cloud.');
+        } catch (_) {}
       }
     } catch (err: any) {
-      console.warn('Auto cloud restore error:', err);
-      setSyncError(err?.message || 'Sync failed');
+      console.info('Auto cloud restore note:', err?.message || err);
+      const isOffline =
+        err?.message?.includes('offline') ||
+        err?.code === 'unavailable' ||
+        err?.message?.includes('Could not reach Cloud Firestore');
+      if (!isOffline) {
+        setSyncError(err?.message || 'Sync failed');
+      }
     } finally {
       setIsSyncing(false);
       isInitialCloudLoadDone.current = true;
@@ -381,9 +389,6 @@ export default function App() {
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="font-bold text-sm sm:text-base tracking-tight text-white truncate">
                   Mastery Engine
-                </span>
-                <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-mono bg-cyan-950/70 text-cyan-300 border border-cyan-800/60 font-semibold tracking-wide shrink-0">
-                  2025/26
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 font-mono hidden md:block truncate">

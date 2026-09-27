@@ -9,6 +9,10 @@ import {
 } from 'firebase/auth';
 import { 
   getFirestore, 
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  enableNetwork,
   doc, 
   getDoc, 
   setDoc, 
@@ -28,8 +32,33 @@ googleProvider.setCustomParameters({
   prompt: 'select_account',
 });
 
-// Initialize Firestore with configured databaseId
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
+// Initialize Firestore with configured databaseId, persistent local cache, and long-polling for stable web connectivity
+let firestoreInstance;
+try {
+  firestoreInstance = initializeFirestore(
+    app,
+    {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
+      }),
+      experimentalForceLongPolling: true,
+    },
+    firebaseConfig.firestoreDatabaseId || '(default)'
+  );
+} catch (_) {
+  firestoreInstance = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
+}
+
+export const db = firestoreInstance;
+
+// Reconnect automatically when the browser comes online
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    try {
+      enableNetwork(db).catch(() => {});
+    } catch (_) {}
+  });
+}
 
 /**
  * Validates connection to Firestore at boot time as prescribed by Firebase Integration Skill
@@ -39,8 +68,12 @@ export async function validateFirestoreConnection(): Promise<boolean> {
     await getDocFromServer(doc(db, 'test', 'connection'));
     return true;
   } catch (error: any) {
-    if (error?.message?.includes('the client is offline')) {
-      console.warn('Firestore is running in offline mode. Local caching enabled.');
+    if (
+      error?.message?.includes('the client is offline') ||
+      error?.code === 'unavailable' ||
+      error?.message?.includes('offline')
+    ) {
+      console.info('Firestore is operating in offline mode. Local caching enabled.');
     }
     return true;
   }
@@ -109,54 +142,88 @@ export async function saveProgressToCloud(user: User, state: AppState): Promise<
     lastSyncedAt: now,
   };
 
-  await setDoc(progressRef, payload, { merge: true });
-
-  // Update profile lastSyncedAt
   try {
-    const userRef = doc(db, 'users', user.uid);
-    await setDoc(userRef, { lastSyncedAt: now }, { merge: true });
-  } catch (_) {
-    // Ignore profile update failure if rules allow
-  }
+    await setDoc(progressRef, payload, { merge: true });
 
-  return now;
+    // Update profile lastSyncedAt
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, { lastSyncedAt: now }, { merge: true });
+    } catch (_) {
+      // Ignore profile update failure if rules allow
+    }
+
+    return now;
+  } catch (err: any) {
+    const isOffline =
+      err?.code === 'unavailable' ||
+      err?.message?.includes('offline') ||
+      err?.message?.includes('Could not reach Cloud');
+
+    if (isOffline) {
+      console.info('Client is currently offline; write queued locally in Firestore cache and will sync automatically once online.');
+      return now;
+    }
+    throw err;
+  }
 }
 
 /**
- * Load user JEE state from Cloud Firestore
+ * Load user JEE state from Cloud Firestore with retries and graceful offline fallback
  */
-export async function loadProgressFromCloud(user: User): Promise<AppState | null> {
+export async function loadProgressFromCloud(user: User, retries = 2): Promise<AppState | null> {
   if (!user || !user.uid) return null;
 
-  try {
-    const progressRef = doc(db, 'users', user.uid, 'progress', 'state');
-    const snap = await getDoc(progressRef);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const progressRef = doc(db, 'users', user.uid, 'progress', 'state');
+      const snap = await getDoc(progressRef);
 
-    if (!snap.exists()) {
-      return null;
+      if (!snap.exists()) {
+        return null;
+      }
+
+      const data = snap.data();
+      if (!data) return null;
+
+      const parsedChapters = data.chapters ? JSON.parse(data.chapters) : [];
+      const parsedSessions = data.practiceSessions ? JSON.parse(data.practiceSessions) : [];
+      const parsedMocks = data.mockTests ? JSON.parse(data.mockTests) : [];
+      const parsedErrors = data.errorLogs ? JSON.parse(data.errorLogs) : [];
+
+      return {
+        chapters: parsedChapters,
+        practiceSessions: parsedSessions,
+        mockTests: parsedMocks,
+        errorLogs: parsedErrors,
+        targetExamYear: data.targetExamYear || 2026,
+        dailyGoalQuestions: data.dailyGoalQuestions || 40,
+        activeChapterIdForStudyRoom: data.activeChapterIdForStudyRoom || 'phy-01',
+      };
+    } catch (err: any) {
+      const isOfflineOrUnavailable =
+        err?.code === 'unavailable' ||
+        err?.message?.includes('offline') ||
+        err?.message?.includes('Could not reach Cloud Firestore') ||
+        err?.message?.includes('network');
+
+      if (isOfflineOrUnavailable && attempt < retries) {
+        // Wait 1 second before retrying to allow WebChannel connection to complete
+        await new Promise((res) => setTimeout(res, 1000));
+        continue;
+      }
+
+      if (isOfflineOrUnavailable) {
+        console.info('Cloud Firestore is operating in offline mode; using cached local progress.');
+        return null;
+      }
+
+      console.error('Failed to load progress from cloud:', err);
+      throw err;
     }
-
-    const data = snap.data();
-    if (!data) return null;
-
-    const parsedChapters = data.chapters ? JSON.parse(data.chapters) : [];
-    const parsedSessions = data.practiceSessions ? JSON.parse(data.practiceSessions) : [];
-    const parsedMocks = data.mockTests ? JSON.parse(data.mockTests) : [];
-    const parsedErrors = data.errorLogs ? JSON.parse(data.errorLogs) : [];
-
-    return {
-      chapters: parsedChapters,
-      practiceSessions: parsedSessions,
-      mockTests: parsedMocks,
-      errorLogs: parsedErrors,
-      targetExamYear: data.targetExamYear || 2026,
-      dailyGoalQuestions: data.dailyGoalQuestions || 40,
-      activeChapterIdForStudyRoom: data.activeChapterIdForStudyRoom || 'phy-01',
-    };
-  } catch (err: any) {
-    console.error('Failed to load progress from cloud:', err);
-    throw err;
   }
+
+  return null;
 }
 
 /**
