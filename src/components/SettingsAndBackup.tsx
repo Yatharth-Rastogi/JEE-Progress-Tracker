@@ -8,6 +8,7 @@ import { AppState } from '../types/jee';
 import { safeJsonStringify } from '../utils/calculations';
 import { getValidVideoUrlForChapter } from '../data/curatedVideos';
 import { mergeLoadedChaptersWithMaster } from '../data/syllabus';
+import firebaseConfig from '../../firebase-applet-config.json';
 
 interface SettingsAndBackupProps {
   appState: AppState;
@@ -149,7 +150,7 @@ export const SettingsAndBackup: React.FC<SettingsAndBackupProps> = ({
                       Your app is hosted on a custom domain or GitHub Pages (<code className="px-1.5 py-0.5 rounded bg-black/40 text-amber-300 font-mono text-[10px]">{typeof window !== 'undefined' ? window.location.hostname : 'custom-domain'}</code>) which needs to be added to Firebase Authorized Domains.
                     </p>
                     <div className="p-2.5 rounded-lg bg-black/50 border border-white/[0.08] text-slate-300 font-mono text-[10px] space-y-1">
-                      <div>1. Open <a href="https://console.firebase.google.com/project/gen-lang-client-0161368789/authentication/settings" target="_blank" rel="noreferrer" className="text-cyan-400 underline font-semibold">Firebase Console &gt; Authentication &gt; Settings</a></div>
+                      <div>1. Open <a href={`https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/settings`} target="_blank" rel="noreferrer" className="text-cyan-400 underline font-semibold">Firebase Console &gt; Authentication &gt; Settings</a></div>
                       <div>2. Click on the <strong>Authorized domains</strong> tab</div>
                       <div>3. Click <strong>Add domain</strong> &amp; enter: <span className="text-amber-300 font-bold">{typeof window !== 'undefined' ? window.location.hostname : 'yatharth-rastogi.github.io'}</span></div>
                     </div>
