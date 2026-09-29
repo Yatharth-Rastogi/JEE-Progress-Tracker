@@ -17,52 +17,86 @@ export function getGenuineSolvesPercent(chapter: Pick<Chapter, 'pyqAttempted' | 
 
 /**
  * Weakness Level rule:
- * - Very Weak: Untouched chapters (0% theory & 0 questions) OR severe failure (accuracy < 40% or >=6 errors)
- * - Weak: Low accuracy (accuracy < 55% or >3 errors)
- * - Moderate: Theory started/completed or basic questions attempted with decent grasp
- * - Strong: PYQ Accuracy >= 75% AND Genuine Solves >= 10 AND attempted >= 10
+ * - Very Weak:
+ *   - Untouched or early theory (< 50% theory) with 0 or minimal practice (< 5 questions)
+ *   - Practiced with severe failure (accuracy < 40% or >= 6 errors)
+ * - Weak:
+ *   - Partial or completed theory (>= 50%) but 0 questions practiced (untested in exam conditions)
+ *   - Practiced with low accuracy (accuracy < 55% or > 3 errors)
+ *   - Minimal question sample (< 5 questions) even if theory >= 50%
+ * - Moderate:
+ *   - Substantial theory (>= 50%) AND verified practice (>= 5 questions solved with >= 55% accuracy and no severe errors)
+ * - Strong:
+ *   - High mastery (>= 50% theory, >= 10 PYQs attempted with >= 75% accuracy and >= 10 genuine solves)
  */
 export function calculateWeaknessLevel(
   chapter: Pick<Chapter, 'pyqAttempted' | 'pyqCorrect' | 'genuineSolves'> & {
     basicAttempted?: number;
+    basicCorrect?: number;
     theoryPercent?: number;
     theoryStatus?: string;
   }
 ): WeaknessLevel {
-  const attempted = chapter.pyqAttempted || 0;
-  const correct = chapter.pyqCorrect || 0;
+  const pyqAttempted = chapter.pyqAttempted || 0;
+  const pyqCorrect = chapter.pyqCorrect || 0;
   const genuineSolves = chapter.genuineSolves || 0;
   const basicAttempted = chapter.basicAttempted || 0;
+  const basicCorrect = chapter.basicCorrect || 0;
   const theoryPercent = chapter.theoryPercent || 0;
-  const accuracy = attempted > 0 ? (correct / attempted) * 100 : 0;
-  const errorCount = attempted - correct;
 
-  // 1. Untouched / Not Started: If student hasn't touched theory and hasn't solved any questions
-  if (attempted === 0 && basicAttempted === 0 && theoryPercent === 0) {
-    return 'Very Weak';
-  }
+  const totalAttempted = pyqAttempted + basicAttempted;
+  const totalCorrect = pyqCorrect + basicCorrect;
+  const pyqAccuracy = pyqAttempted > 0 ? (pyqCorrect / pyqAttempted) * 100 : 0;
+  const overallAccuracy = totalAttempted > 0 ? (totalCorrect / totalAttempted) * 100 : 0;
+  const pyqErrorCount = pyqAttempted - pyqCorrect;
+  const totalErrorCount = totalAttempted - totalCorrect;
 
-  // 2. High Mastery: At least 10 PYQs attempted with >= 75% accuracy and >= 10 genuine solves
-  if (attempted >= 10 && accuracy >= 75 && genuineSolves >= 10) {
-    return 'Strong';
-  }
-
-  // 3. Very Weak: Practiced with severe issues (accuracy < 40% or error count >= 6)
-  if (attempted > 0 && (accuracy < 40 || errorCount >= 6)) {
-    return 'Very Weak';
-  }
-
-  // 4. Weak: Practiced with low accuracy (accuracy < 55% or error count > 3)
-  if (attempted > 0 && (accuracy < 55 || errorCount > 3)) {
+  // 1. Zero Questions Practiced
+  if (totalAttempted === 0) {
+    // If student hasn't reached at least 50% theory, it is Very Weak
+    if (theoryPercent < 50) {
+      return 'Very Weak';
+    }
+    // If theory is >= 50% but 0 questions have been tested, it remains Weak (needs practice)
     return 'Weak';
   }
 
-  // 5. If theory has started/completed or basic questions solved with no major failures
-  if (theoryPercent > 0 || basicAttempted > 0 || (attempted > 0 && accuracy >= 55)) {
+  // 2. High Mastery: At least 10 PYQs with >= 75% accuracy and >= 10 genuine solves, plus solid theory
+  if (theoryPercent >= 50 && pyqAttempted >= 10 && pyqAccuracy >= 75 && genuineSolves >= 10) {
+    return 'Strong';
+  }
+
+  // 3. Severe Practice Issues (Accuracy < 40% or >= 6 errors)
+  if (
+    (pyqAttempted > 0 && pyqAccuracy < 40) ||
+    (totalAttempted >= 5 && overallAccuracy < 40) ||
+    pyqErrorCount >= 6 ||
+    totalErrorCount >= 6
+  ) {
+    return 'Very Weak';
+  }
+
+  // 4. Low Accuracy / Noticeable Struggle (Accuracy < 55% or > 3 errors)
+  if (
+    (pyqAttempted > 0 && pyqAccuracy < 55) ||
+    (totalAttempted >= 5 && overallAccuracy < 55) ||
+    pyqErrorCount > 3 ||
+    totalErrorCount > 3
+  ) {
+    return 'Weak';
+  }
+
+  // 5. Minimal Practice Sample Size (< 5 questions attempted)
+  if (totalAttempted < 5) {
+    return theoryPercent < 50 ? 'Very Weak' : 'Weak';
+  }
+
+  // 6. Moderate: Decent theory (>= 50%) AND at least 5 questions solved with >= 55% accuracy
+  if (theoryPercent >= 50 && overallAccuracy >= 55) {
     return 'Moderate';
   }
 
-  return 'Weak';
+  return theoryPercent < 50 ? 'Very Weak' : 'Weak';
 }
 
 /**
