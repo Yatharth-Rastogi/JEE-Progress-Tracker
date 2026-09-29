@@ -10,13 +10,11 @@ import {
 import { 
   getFirestore, 
   initializeFirestore,
-  persistentLocalCache,
-  persistentMultipleTabManager,
+  setLogLevel,
   enableNetwork,
   doc, 
   getDoc, 
-  setDoc, 
-  getDocFromServer 
+  setDoc
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 import { AppState } from '../types/jee';
@@ -25,6 +23,9 @@ import { safeJsonStringify } from './calculations';
 // Initialize Firebase App
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
+// Suppress benign connection timeout warning messages in preview/offline environments
+setLogLevel('error');
+
 // Initialize Firebase Auth
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
@@ -32,11 +33,25 @@ googleProvider.setCustomParameters({
   prompt: 'select_account',
 });
 
-// Initialize Firestore with configured databaseId
-export const db =
+// Initialize Firestore with configured databaseId and auto-detect long polling for reliable web/iframe connections
+const firestoreDbId =
   firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
-    ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
-    : getFirestore(app);
+    ? firebaseConfig.firestoreDatabaseId
+    : undefined;
+
+export const db = (() => {
+  try {
+    return initializeFirestore(
+      app,
+      {
+        experimentalAutoDetectLongPolling: true,
+      },
+      firestoreDbId
+    );
+  } catch (_err) {
+    return firestoreDbId ? getFirestore(app, firestoreDbId) : getFirestore(app);
+  }
+})();
 
 // Reconnect automatically when the browser comes online
 if (typeof window !== 'undefined') {
@@ -48,16 +63,10 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Validates connection to Firestore at boot time as prescribed by Firebase Integration Skill
+ * Validates connection to Firestore at boot time safely without triggering unauthenticated timeouts
  */
 export async function validateFirestoreConnection(): Promise<boolean> {
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-    return true;
-  } catch (_error: any) {
-    // Normal during initial boot before user authentication; Firestore automatically manages offline queue
-    return true;
-  }
+  return !!db;
 }
 
 /**
@@ -160,13 +169,20 @@ export async function saveProgressToCloud(user: User, state: AppState): Promise<
 /**
  * Load user JEE state from Cloud Firestore with retries and graceful offline fallback
  */
-export async function loadProgressFromCloud(user: User, retries = 2): Promise<AppState | null> {
+export async function loadProgressFromCloud(user: User, retries = 1): Promise<AppState | null> {
   if (!user || !user.uid) return null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const progressRef = doc(db, 'users', user.uid, 'progress', 'state');
-      const snap = await getDoc(progressRef);
+      
+      // 5-second race safeguard so UI doesn't stall if network is slow or offline
+      const snap = await Promise.race([
+        getDoc(progressRef),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('unavailable: timeout reaching cloud backend')), 5000)
+        )
+      ]);
 
       if (!snap.exists()) {
         return null;

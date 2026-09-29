@@ -222,11 +222,11 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
       {/* ==================================================== */}
       {activeSubTab === 'mockTests' && (
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white">Full-Length Test History</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h2 className="text-base sm:text-lg font-bold text-white">Full-Length Test History</h2>
             <button
               onClick={() => setShowAddMockModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-rose-500 to-amber-600 hover:from-rose-400 hover:to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-500/20 flex items-center gap-2 transition-all"
+              className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-rose-500 to-amber-600 hover:from-rose-400 hover:to-amber-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"
             >
               <PlusCircle className="w-4 h-4" />
               Record New Mock Test
@@ -362,7 +362,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5 pt-1">
               {(
                 [
                   { type: 'Conceptual Error', icon: '🔴', color: 'border-rose-500/20 bg-rose-500/10 text-rose-300' },
@@ -371,10 +371,10 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
                   { type: 'Silly Mistake', icon: '🤦', color: 'border-purple-500/20 bg-purple-500/10 text-purple-300' },
                   { type: 'Misread Question', icon: '📖', color: 'border-indigo-500/20 bg-indigo-500/10 text-indigo-300' },
                 ] as const
-              ).map(({ type, icon, color }) => (
+              ).map(({ type, icon, color }, idx) => (
                 <div
                   key={type}
-                  className={`p-2.5 rounded-xl border ${color} space-y-1`}
+                  className={`p-2.5 rounded-xl border ${color} space-y-1 ${idx === 4 ? 'col-span-2 sm:col-span-1' : ''}`}
                 >
                   <div className="text-[11px] font-medium truncate flex items-center gap-1">
                     <span>{icon}</span> <span className="truncate">{type}</span>
@@ -430,7 +430,7 @@ export const MockTestsAndErrorLog: React.FC<MockTestsAndErrorLogProps> = ({
 
             <button
               onClick={() => setShowAddErrorModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 active:scale-95"
             >
               <PlusCircle className="w-4 h-4" />
               Log Mistake

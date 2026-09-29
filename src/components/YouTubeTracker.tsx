@@ -418,6 +418,18 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
                 {currentChapter.priority}
               </span>
 
+              {currentChapter.strategicTier && (
+                <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-mono font-medium text-cyan-300 bg-cyan-950/60 border border-cyan-800/40">
+                  {currentChapter.strategicTier}
+                </span>
+              )}
+
+              {currentChapter.historicalWeightage && (
+                <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-mono text-slate-300 bg-white/[0.04] border border-white/[0.08]">
+                  Weight: <strong className="text-white">{currentChapter.historicalWeightage}</strong> • ~{currentChapter.avgQsPerShift} Qs/Shift
+                </span>
+              )}
+
               <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-lg font-mono text-cyan-300 bg-white/[0.03] border border-white/[0.06]">
                 Ch #{currentChapter.id.split('-')[1]}
               </span>

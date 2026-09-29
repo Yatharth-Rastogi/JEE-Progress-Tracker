@@ -215,7 +215,7 @@ export const SettingsAndBackup: React.FC<SettingsAndBackupProps> = ({
                 </span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Automatically saves your entire 67-chapter syllabus, PYQ solve metrics, and test logs to Cloud Firestore.
+                Automatically saves your entire {appState.chapters.length}-chapter syllabus, PYQ solve metrics, and test logs to Cloud Firestore.
               </p>
             </div>
           </div>

@@ -27,6 +27,9 @@ export interface Chapter {
   unit: string;
   name: string;
   priority: Priority;
+  strategicTier?: string; // e.g. 'Tier 1 (Must-Master)', 'Tier 1 (High ROI)', 'Tier 2 (Core)', 'Tier 3 (Foundation)'
+  historicalWeightage?: string; // e.g. '9.67%', '6.57%–9.90%'
+  avgQsPerShift?: string; // e.g. '2–3', '1–2', '1', 'Integrated'
   prerequisites: string[]; // names or IDs
   
   // Theory

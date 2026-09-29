@@ -375,7 +375,7 @@ export default function App() {
 
   const tabs = [
     { name: 'Dashboard', shortName: 'Dashboard', icon: LayoutDashboard },
-    { name: `Master Syllabus (${appState.chapters.length})`, shortName: 'Syllabus', icon: BookOpen },
+    { name: `Master Syllabus (${appState.chapters.length})`, shortName: `Syllabus (${appState.chapters.length})`, icon: BookOpen },
     { name: 'YouTube Study Room', shortName: 'Study Room', icon: Play },
     { name: 'Practice & PYQs', shortName: 'Practice', icon: Edit3 },
     { name: 'Mock Tests & Errors', shortName: 'Tests & Errors', icon: Trophy },
@@ -424,8 +424,8 @@ export default function App() {
               className="px-2.5 sm:px-3.5 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl shadow-sm hover:shadow-cyan-500/25 transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
             >
               <PlusCircle className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span className="hidden xs:inline sm:inline">Log PYQ</span>
-              <span className="xs:hidden sm:hidden">Log</span>
+              <span className="hidden sm:inline">Log PYQ</span>
+              <span className="sm:hidden">Log</span>
             </button>
 
             {/* Google Account & Cloud Backup Component */}

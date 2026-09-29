@@ -359,10 +359,22 @@ export const MasterChapterTracker: React.FC<MasterChapterTrackerProps> = ({
                 </div>
 
                 {/* Chapter Title */}
-                <div>
+                <div className="space-y-1.5">
                   <h3 className="font-bold text-white text-sm leading-snug">
                     {chapter.name}
                   </h3>
+                  {chapter.strategicTier && (
+                    <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+                      <span className="text-cyan-300 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded font-medium">
+                        {chapter.strategicTier}
+                      </span>
+                      {chapter.historicalWeightage && (
+                        <span className="text-slate-300 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded">
+                          Weight: <strong className="text-white">{chapter.historicalWeightage}</strong> • ~{chapter.avgQsPerShift} Qs
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {chapter.prerequisites && chapter.prerequisites.length > 0 && (
                     <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1 truncate">
                       <span className="text-slate-400">Prereq:</span>
@@ -580,9 +592,9 @@ export const MasterChapterTracker: React.FC<MasterChapterTrackerProps> = ({
                         )}
                       </td>
 
-                      {/* Priority */}
+                      {/* Priority & Weightage */}
                       <td className="py-3 px-2">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                           chapter.priority === 'Critical'
                             ? 'bg-rose-950/80 text-rose-300 border-rose-700/60'
                             : chapter.priority === 'High'
@@ -591,6 +603,16 @@ export const MasterChapterTracker: React.FC<MasterChapterTrackerProps> = ({
                         }`}>
                           {chapter.priority}
                         </span>
+                        {chapter.strategicTier && (
+                          <div className="text-[10px] text-cyan-300 font-mono font-medium mt-1 whitespace-nowrap">
+                            {chapter.strategicTier}
+                          </div>
+                        )}
+                        {chapter.historicalWeightage && (
+                          <div className="text-[10px] text-slate-400 font-mono">
+                            {chapter.historicalWeightage} (~{chapter.avgQsPerShift} Q)
+                          </div>
+                        )}
                       </td>
 
                       {/* Theory Status & % */}
