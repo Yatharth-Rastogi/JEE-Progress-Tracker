@@ -81,9 +81,27 @@ export default function App() {
       const cloudData = await loadProgressFromCloud(firebaseUser);
       if (cloudData && cloudData.chapters && cloudData.chapters.length > 0) {
         const merged = mergeLoadedChaptersWithMaster(cloudData.chapters);
+        
+        // Preserve any bookmarks from local appState that may not be in cloudData yet (e.g. offline edits)
+        const enrichedChapters = merged.map((cloudCh) => {
+          const localCh = appState.chapters.find((lc) => lc.id === cloudCh.id);
+          const cloudBookmarks = cloudCh.bookmarks || [];
+          const localBookmarks = localCh?.bookmarks || [];
+
+          if (cloudBookmarks.length === 0 && localBookmarks.length > 0) {
+            return { ...cloudCh, bookmarks: localBookmarks };
+          }
+          if (cloudBookmarks.length > 0 && localBookmarks.length > 0) {
+            const existingIds = new Set(cloudBookmarks.map((b) => b.id));
+            const missing = localBookmarks.filter((b) => !existingIds.has(b.id));
+            return { ...cloudCh, bookmarks: [...cloudBookmarks, ...missing] };
+          }
+          return cloudCh;
+        });
+
         const restoredState: AppState = {
           ...cloudData,
-          chapters: merged,
+          chapters: enrichedChapters,
           practiceSessions: cloudData.practiceSessions || [],
           mockTests: cloudData.mockTests || [],
           errorLogs: cloudData.errorLogs || [],
@@ -130,14 +148,26 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Sync to localStorage
+  // Sync to localStorage immediately and flush on beforeunload
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, safeJsonStringify(appState));
     } catch (e: any) {
       console.warn('Failed to save state to localStorage:', e?.message || String(e));
     }
-  }, [appState]);
+
+    const handleBeforeUnload = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, safeJsonStringify(appState));
+        if (user) {
+          saveProgressToCloud(user, appState).catch(() => {});
+        }
+      } catch (_) {}
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [appState, user]);
 
   // Debounced auto-sync to Cloud Firestore after every single change to appState
   useEffect(() => {
@@ -155,7 +185,7 @@ export default function App() {
       } finally {
         setIsSyncing(false);
       }
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [appState, user]);

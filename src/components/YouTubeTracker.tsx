@@ -38,6 +38,7 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
   const [duration, setDuration] = useState<number>(currentChapter?.videoDuration || 0);
   const [manualPercent, setManualPercent] = useState<number>(currentChapter?.theoryPercent || 0);
   const [bookmarkNote, setBookmarkNote] = useState('');
+  const [bookmarkToast, setBookmarkToast] = useState<string | null>(null);
   const [theoryNotes, setTheoryNotes] = useState(currentChapter?.theoryNotes || '');
   const [apiReady, setApiReady] = useState(false);
   const [playerError, setPlayerError] = useState<string | null>(null);
@@ -233,12 +234,16 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
 
           const status = autoPercent >= 98 ? 'Completed' : autoPercent > 0 ? 'In Progress' : 'Not Started';
 
-          onUpdateChapter(currentChapter.id, {
-            videoCurrentTime: sec,
-            videoDuration: dur,
-            theoryPercent: autoPercent,
-            theoryStatus: status,
-          });
+          // Throttle persistent chapter updates during continuous playback to every 5s or completion
+          // This keeps playback responsive while preventing auto-sync debounce starvation
+          if (sec % 5 === 0 || autoPercent >= 98) {
+            onUpdateChapter(currentChapter.id, {
+              videoCurrentTime: sec,
+              videoDuration: dur,
+              theoryPercent: autoPercent,
+              theoryStatus: status,
+            });
+          }
         }
       }
     }, 1000);
@@ -330,11 +335,15 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
       bookmarks: [...existingBookmarks, newBookmark],
     });
     setBookmarkNote('');
+    setBookmarkToast(`Bookmark saved at ${formatSeconds(currentTime)}`);
+    setTimeout(() => setBookmarkToast(null), 3000);
   };
 
   const handleDeleteBookmark = (bmId: string) => {
     const updated = (currentChapter.bookmarks || []).filter((b) => b.id !== bmId);
     onUpdateChapter(currentChapter.id, { bookmarks: updated });
+    setBookmarkToast('Bookmark removed');
+    setTimeout(() => setBookmarkToast(null), 2500);
   };
 
   const handleSaveNotes = () => {
@@ -775,6 +784,14 @@ export const YouTubeTracker: React.FC<YouTubeTrackerProps> = ({
                 Bookmark Current Second ({formatSeconds(currentTime)})
               </button>
             </div>
+
+            {/* Bookmark Toast Confirmation */}
+            {bookmarkToast && (
+              <div className="p-2 bg-emerald-950/80 border border-emerald-500/40 rounded-lg text-emerald-300 text-[11px] font-medium flex items-center gap-1.5 animate-pulse">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>{bookmarkToast}</span>
+              </div>
+            )}
 
             {/* Bookmarks List */}
             <div className="space-y-2 max-h-56 overflow-y-auto pr-1">

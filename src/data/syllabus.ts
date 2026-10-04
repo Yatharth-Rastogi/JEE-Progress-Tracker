@@ -2446,6 +2446,9 @@ export function mergeLoadedChaptersWithMaster(loadedChapters: Chapter[]): Chapte
         videoCurrentTime: typeof match.videoCurrentTime === 'number' ? match.videoCurrentTime : masterCh.videoCurrentTime,
         videoDuration: typeof match.videoDuration === 'number' ? match.videoDuration : masterCh.videoDuration,
         videoUrl: validUrl,
+        videoTitle: match.videoTitle || masterCh.videoTitle,
+        bookmarks: Array.isArray(match.bookmarks) ? match.bookmarks : (masterCh.bookmarks || []),
+        theoryNotes: typeof match.theoryNotes === 'string' ? match.theoryNotes : (masterCh.theoryNotes || ''),
         // Crucial: ALWAYS enforce masterCh identifiers so React keys are 100% unique
         id: masterCh.id,
         subject: masterCh.subject,
@@ -2462,6 +2465,8 @@ export function mergeLoadedChaptersWithMaster(loadedChapters: Chapter[]): Chapte
     return {
       ...masterCh,
       videoUrl: getValidVideoUrlForChapter(masterCh.id, masterCh.videoUrl),
+      bookmarks: masterCh.bookmarks || [],
+      theoryNotes: masterCh.theoryNotes || '',
     };
   });
 }
